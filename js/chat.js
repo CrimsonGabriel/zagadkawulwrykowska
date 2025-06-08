@@ -8,7 +8,9 @@ if (!localStorage.getItem("playerId")) {
 let playerId = localStorage.getItem("playerId");
 
 let nicknameMap = {};
+let bannedList = {};
 let fullMessageMap = {};
+let allPlayers = [];
 
 function renderChat(messages) {
   chatLog.innerHTML = "";
@@ -21,8 +23,11 @@ function renderChat(messages) {
       ? '<span style="color:red;">GM - Wulwryk</span>'
       : display;
 
+    const date = new Date(msg.timestamp || Date.now());
+    const time = date.toLocaleTimeString("pl-PL", { hour: '2-digit', minute: '2-digit' });
+
     const div = document.createElement("div");
-    div.innerHTML = `[${label}] ${msg.text}`;
+    div.innerHTML = `<span style="color:gray;">[${time}]</span> [${label}] ${msg.text}`;
 
     if (isGamemaster()) {
       const delBtn = document.createElement("button");
@@ -39,6 +44,11 @@ function renderChat(messages) {
 function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
+
+  if (bannedList[playerId]) {
+    alert("Jesteś zbanowany 😡");
+    return;
+  }
 
   const name = isGamemaster() ? "GM" : playerId;
 
@@ -64,6 +74,7 @@ function isGamemaster() {
   return localStorage.getItem("isGM") === "true";
 }
 
+// 🔁 nicki
 function updateNicknames(newMap) {
   db.ref("nicknames").set(newMap);
 }
@@ -71,13 +82,35 @@ function updateNicknames(newMap) {
 function subscribeToNicknames() {
   db.ref("nicknames").on("value", (snap) => {
     nicknameMap = snap.val() || {};
-    subscribeToChat();
+    renderChat(fullMessageMap);
     updatePlayersListUI();
   });
 }
 
-let allPlayers = [];
+// 🔒 bany
+function subscribeToBans() {
+  db.ref("banned").on("value", snap => {
+    bannedList = snap.val() || {};
+    if (bannedList[playerId]) {
+      alert("Zostałeś zbanowany przez Wulwryka 😢");
+      input.disabled = true;
+      input.placeholder = "Zbanowany...";
+    } else {
+      input.disabled = false;
+      input.placeholder = "Napisz coś...";
+    }
+  });
+}
 
+function banPlayer(id) {
+  db.ref("banned/" + id).set(true);
+}
+
+function unbanPlayer(id) {
+  db.ref("banned/" + id).remove();
+}
+
+// 🔁 lista graczy
 function updatePlayersListFromMessages(messages) {
   const names = new Set();
   Object.values(messages || {}).forEach(msg => {
@@ -99,9 +132,21 @@ function updatePlayersListUI() {
       <span>${id} → <strong>${current}</strong></span><br>
       <input type="text" placeholder="Nowe imię" id="rename-${id}"/>
       <button onclick="renamePlayer('${id}')">Zmień</button>
+      <button onclick="banPlayer('${id}')">🚫 Ban</button>
+      <button onclick="unbanPlayer('${id}')">✅ Unban</button>
     `;
     list.appendChild(li);
   });
+
+  list.innerHTML += `
+    <hr/>
+    <p><strong>Zarządzanie czatem</strong></p>
+    <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
+    <input type="number" id="del-last-n" placeholder="Ostatnie X"/>
+    <button onclick="deleteLastN()">Usuń ostatnie</button><br><br>
+    <input type="number" id="del-first-n" placeholder="Najstarsze X"/>
+    <button onclick="deleteFirstN()">Usuń najstarsze</button>
+  `;
 }
 
 function renamePlayer(id) {
@@ -112,8 +157,7 @@ function renamePlayer(id) {
   updateNicknames(nicknameMap);
 }
 
-// 🔥 Firebase chat utils
-
+// 🔥 Firebase czat utils
 function deleteMessage(msgId) {
   db.ref("chat/" + msgId).remove();
 }
@@ -142,4 +186,7 @@ function deleteFirstN() {
   toDelete.forEach(([id]) => db.ref("chat/" + id).remove());
 }
 
+// 🔥 INIT
 subscribeToNicknames();
+subscribeToBans();
+subscribeToChat();
