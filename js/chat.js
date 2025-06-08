@@ -2,10 +2,11 @@ const chatLog = document.getElementById("chat-log");
 const input = document.getElementById("chat-input");
 
 if (!localStorage.getItem("playerId")) {
-  let nextId = Math.floor(Math.random() * 100000);
-  localStorage.setItem("playerId", "gracz_" + nextId);
+  const id = "gracz_" + crypto.randomUUID().slice(0, 6); // unikalny ID
+  localStorage.setItem("playerId", id);
 }
 let playerId = localStorage.getItem("playerId");
+
 
 let nicknameMap = {};
 let bannedList = {};
