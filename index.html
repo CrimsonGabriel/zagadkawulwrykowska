@@ -44,16 +44,27 @@
   </div>
 
   <div id="admin-panel" class="slide-panel" style="display:none;">
-    <h3>Panel Wulwryka 👑</h3>
-    <input type="file" id="card-upload"/>
-    <input type="text" id="card-code" placeholder="Kod do tej karty"/>
-    <button onclick="addCard()">Dodaj kartę</button>
-    <pre id="card-json-preview"></pre>
-    <button onclick="downloadJSON()">Pobierz cards.json</button>
+  <h3>Panel Wulwryka 👑</h3>
+  <input type="file" id="card-upload"/>
+  <input type="text" id="card-code" placeholder="Kod do tej karty"/>
+  <button onclick="addCard()">Dodaj kartę</button>
+  <pre id="card-json-preview"></pre>
+  <button onclick="downloadJSON()">Pobierz cards.json</button>
 
-    <h4>Gracze aktywni</h4>
-    <ul id="players-list"></ul>
+  <h4>Gracze aktywni</h4>
+  <ul id="players-list"></ul>
+
+  <div id="admin-controls">
+    <hr/>
+    <p><strong>Zarządzanie czatem</strong></p>
+    <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
+    <input type="number" id="del-last-n" placeholder="Ostatnie X"/>
+    <button onclick="deleteLastN()">Usuń ostatnie</button><br><br>
+    <input type="number" id="del-first-n" placeholder="Najstarsze X"/>
+    <button onclick="deleteFirstN()">Usuń najstarsze</button>
   </div>
+</div>
+
 
   <script src="js/auth.js"></script>
   <script src="js/chat.js"></script>

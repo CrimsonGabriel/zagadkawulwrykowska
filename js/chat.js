@@ -8,8 +8,7 @@ if (!localStorage.getItem("playerId")) {
 let playerId = localStorage.getItem("playerId");
 
 let nicknameMap = {};
-let playerName = null;
-let fullMessageMap = {}; // all messages with Firebase keys
+let fullMessageMap = {};
 
 function renderChat(messages) {
   chatLog.innerHTML = "";
@@ -65,7 +64,6 @@ function isGamemaster() {
   return localStorage.getItem("isGM") === "true";
 }
 
-// 🔁 nickname system
 function updateNicknames(newMap) {
   db.ref("nicknames").set(newMap);
 }
@@ -78,7 +76,6 @@ function subscribeToNicknames() {
   });
 }
 
-// 🧠 Admin panel nickname changer
 let allPlayers = [];
 
 function updatePlayersListFromMessages(messages) {
@@ -105,16 +102,6 @@ function updatePlayersListUI() {
     `;
     list.appendChild(li);
   });
-
-  list.innerHTML += `
-    <hr/>
-    <p><strong>Zarządzanie czatem</strong></p>
-    <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
-    <input type="number" id="del-last-n" placeholder="Ostatnie X"/>
-    <button onclick="deleteLastN()">Usuń ostatnie</button><br><br>
-    <input type="number" id="del-first-n" placeholder="Najstarsze X"/>
-    <button onclick="deleteFirstN()">Usuń najstarsze</button>
-  `;
 }
 
 function renamePlayer(id) {
@@ -155,5 +142,4 @@ function deleteFirstN() {
   toDelete.forEach(([id]) => db.ref("chat/" + id).remove());
 }
 
-// 🔥 INIT
 subscribeToNicknames();

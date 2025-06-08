@@ -52,8 +52,17 @@ function updateAdminPanel() {
   if (!isGamemaster()) return;
 
   document.getElementById("admin-panel").style.display = "block";
-  document.getElementById("status-bar").innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
-  updatePlayersList();
+  const statusBar = document.getElementById("status-bar");
+  if (statusBar) {
+    statusBar.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
+  }
+
+  const adminControls = document.getElementById("admin-controls");
+  if (adminControls) {
+    adminControls.style.display = "block";
+  }
+
+  updatePlayersList(); // z chat.js
 }
 
 async function addCard() {
