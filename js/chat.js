@@ -74,7 +74,7 @@ function isGamemaster() {
   return localStorage.getItem("isGM") === "true";
 }
 
-// 🔁 nicki
+// 🔁 nickname system
 function updateNicknames(newMap) {
   db.ref("nicknames").set(newMap);
 }
@@ -85,6 +85,15 @@ function subscribeToNicknames() {
     renderChat(fullMessageMap);
     updatePlayersListUI();
   });
+}
+
+function renamePlayer(id) {
+  const input = document.getElementById("rename-" + id);
+  const newName = input.value.trim();
+  if (!newName) return;
+
+  // ✅ zapis do Firebase (per gracz)
+  db.ref("nicknames/" + id).set(newName);
 }
 
 // 🔒 bany
@@ -147,14 +156,6 @@ function updatePlayersListUI() {
     <input type="number" id="del-first-n" placeholder="Najstarsze X"/>
     <button onclick="deleteFirstN()">Usuń najstarsze</button>
   `;
-}
-
-function renamePlayer(id) {
-  const input = document.getElementById("rename-" + id);
-  const newName = input.value.trim();
-  if (!newName) return;
-  nicknameMap[id] = newName;
-  updateNicknames(nicknameMap);
 }
 
 // 🔥 Firebase czat utils
