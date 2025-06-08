@@ -147,15 +147,7 @@ function updatePlayersListUI() {
     list.appendChild(li);
   });
 
-  list.innerHTML += `
-    <hr/>
-    <p><strong>Zarządzanie czatem</strong></p>
-    <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
-    <input type="number" id="del-last-n" placeholder="Ostatnie X"/>
-    <button onclick="deleteLastN()">Usuń ostatnie</button><br><br>
-    <input type="number" id="del-first-n" placeholder="Najstarsze X"/>
-    <button onclick="deleteFirstN()">Usuń najstarsze</button>
-  `;
+  
 }
 
 // 🔥 Firebase czat utils
