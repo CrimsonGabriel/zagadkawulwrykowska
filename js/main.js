@@ -2,15 +2,6 @@ const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;
 
-function isGamemaster() {
-  return localStorage.getItem("isGM") === "true";
-}
-
-function logout() {
-  localStorage.removeItem("isGM");
-  window.location.reload();
-}
-
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
     .then(res => res.json())
@@ -57,13 +48,12 @@ async function sha256(str) {
   return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join("");
 }
 
-// ------------------- GM PANEL -------------------
-
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
   document.getElementById("admin-panel").style.display = "block";
   document.getElementById("status-bar").innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
+  updatePlayersList();
 }
 
 async function addCard() {
@@ -87,7 +77,7 @@ async function addCard() {
   });
 
   updateCardJsonPreview();
-  alert("Dodano! Prześlij ręcznie plik do: " + imagePath);
+  alert("Dodano! Prześlij ręcznie plik obrazka do: " + imagePath);
 }
 
 function updateCardJsonPreview() {
@@ -103,8 +93,6 @@ function downloadJSON() {
   a.download = "cards.json";
   a.click();
 }
-
-// ------------------- INIT -------------------
 
 fetchCards();
 setInterval(fetchCards, 5000);
