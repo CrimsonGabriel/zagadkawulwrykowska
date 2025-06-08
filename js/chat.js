@@ -91,8 +91,6 @@ function renamePlayer(id) {
   const input = document.getElementById("rename-" + id);
   const newName = input.value.trim();
   if (!newName) return;
-
-  // ✅ zapis do Firebase (per gracz)
   db.ref("nicknames/" + id).set(newName);
 }
 
@@ -146,8 +144,6 @@ function updatePlayersListUI() {
     `;
     list.appendChild(li);
   });
-
-  
 }
 
 // 🔥 Firebase czat utils
