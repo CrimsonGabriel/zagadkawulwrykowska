@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zagadka Wulwryka</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <h1>Zagadka Wulwryka</h1>
+  <div id="card-container"></div>
+
+  <div id="unlock-popup" style="display:none;">
+    <p>Wpisz kod aby odblokować kartę:</p>
+    <input type="text" id="code-input"/>
+    <button onclick="submitCode()">Odblo</button>
+  </div>
+
+  <div id="chat">
+    <div id="chat-log"></div>
+    <input id="chat-input" placeholder="Napisz coś..." />
+    <button onclick="sendMessage()">Wyślij</button>
+  </div>
+
+  <script src="js/chat.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

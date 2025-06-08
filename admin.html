@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Admina Wulwryka</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <h1>Panel Admina</h1>
+
+  <label>Dodaj kartę:</label><br>
+  <input type="file" id="card-upload"/><br>
+  <input type="text" id="card-code" placeholder="Kod do tej karty"/><br>
+  <button onclick="addCard()">Dodaj kartę</button>
+
+  <h3>Aktualna lista kart</h3>
+  <pre id="card-json-preview"></pre>
+  <button onclick="downloadJSON()">Pobierz cards.json</button>
+
+  <script>
+    let cards = [];
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function addCard() {
+      const fileInput = document.getElementById("card-upload");
+      const code = document.getElementById("card-code").value.trim();
+
+      if (!fileInput.files.length || !code) {
+        alert("Dodaj obrazek i kod.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const fileName = "card-" + (cards.length + 1) + "." + file.name.split('.').pop();
+      const imagePath = "assets/cards/" + fileName;
+
+      const hash = await sha256(code);
+
+      cards.push({
+        id: "card-" + (cards.length + 1),
+        image: imagePath,
+        codeHash: hash
+      });
+
+      document.getElementById("card-json-preview").textContent = JSON.stringify(cards, null, 2);
+      alert("Dodano! Prześlij ręcznie plik obrazka do: " + imagePath);
+    }
+
+    function downloadJSON() {
+      const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cards.json";
+      a.click();
+    }
+  </script>
+</body>
+</html>
