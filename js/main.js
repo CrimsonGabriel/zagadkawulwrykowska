@@ -1,7 +1,18 @@
 const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;
-let isAdmin = false;
+let isAdmin = isGamemaster();
+
+function updateAdminPanel() {
+  if (isAdmin) {
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("status-bar").innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
+  } else {
+    document.getElementById("admin-panel").style.display = "none";
+    document.getElementById("status-bar").innerHTML = "";
+  }
+}
+
 
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
@@ -10,6 +21,7 @@ function fetchCards() {
       cards = data;
       renderCards();
       if (isAdmin) updateCardJsonPreview();
+
     });
 }
 
@@ -98,3 +110,4 @@ function downloadJSON() {
 
 fetchCards();
 setInterval(fetchCards, 5000);
+updateAdminPanel();
