@@ -8,6 +8,14 @@
 </head>
 <body>
   <h1>Zagadka Wulwryka</h1>
+  <button onclick="toggleLogin()">🔐 Logowanie dla GM'a</button>
+  <div id="login-panel" style="display:none;">
+    <input type="text" id="login" placeholder="login" />
+    <input type="password" id="password" placeholder="hasło" />
+    <button onclick="login()">Zaloguj</button>
+    <p id="login-error" style="color:red;"></p>
+  </div>
+
   <div id="card-container"></div>
 
   <div id="unlock-popup" style="display:none;">
@@ -20,6 +28,15 @@
     <div id="chat-log"></div>
     <input id="chat-input" placeholder="Napisz coś..." />
     <button onclick="sendMessage()">Wyślij</button>
+  </div>
+
+  <div id="admin-panel" class="slide-panel">
+    <h3>Panel Wulwryka 👑</h3>
+    <input type="file" id="card-upload"/>
+    <input type="text" id="card-code" placeholder="Kod do tej karty"/>
+    <button onclick="addCard()">Dodaj kartę</button>
+    <pre id="card-json-preview"></pre>
+    <button onclick="downloadJSON()">Pobierz cards.json</button>
   </div>
 
   <script src="js/chat.js"></script>

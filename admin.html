@@ -4,49 +4,20 @@
   <meta charset="UTF-8">
   <title>Panel Admina Wulwryka</title>
   <link rel="stylesheet" href="css/style.css"/>
-  <style>
-    #admin-panel { display: none; }
-    #login-form input { margin: 5px; }
-  </style>
 </head>
 <body>
-  <h1>Panel Admina Wulwryka</h1>
+  <h1>Panel Admina</h1>
 
-  <div id="login-form">
-    <p>Logowanie:</p>
-    <input type="text" id="login" placeholder="Login"/><br>
-    <input type="password" id="password" placeholder="Hasło"/><br>
-    <button onclick="login()">Zaloguj</button>
-    <p id="login-error" style="color:red;"></p>
-  </div>
+  <label>Dodaj kartę:</label><br>
+  <input type="file" id="card-upload"/><br>
+  <input type="text" id="card-code" placeholder="Kod do tej karty"/><br>
+  <button onclick="addCard()">Dodaj kartę</button>
 
-  <div id="admin-panel">
-    <label>Dodaj kartę:</label><br>
-    <input type="file" id="card-upload"/><br>
-    <input type="text" id="card-code" placeholder="Kod do tej karty"/><br>
-    <button onclick="addCard()">Dodaj kartę</button>
-
-    <h3>Aktualna lista kart</h3>
-    <pre id="card-json-preview"></pre>
-    <button onclick="downloadJSON()">Pobierz cards.json</button>
-  </div>
+  <h3>Aktualna lista kart</h3>
+  <pre id="card-json-preview"></pre>
+  <button onclick="downloadJSON()">Pobierz cards.json</button>
 
   <script>
-    const correctLogin = "Wulwryczek";
-    const correctPassword = "zagadkowo2137";
-
-    function login() {
-      const login = document.getElementById("login").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (login === correctLogin && password === correctPassword) {
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("admin-panel").style.display = "block";
-      } else {
-        document.getElementById("login-error").textContent = "Nieprawidłowy login lub hasło.";
-      }
-    }
-
     let cards = [];
 
     async function sha256(str) {
