@@ -3,16 +3,31 @@ const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;
 
+// Domyślnie pokaż 5 zasłoniętych kart
+function renderPlaceholders() {
+  container.innerHTML = "";
+  for (let i = 0; i < 5; i++) {
+    const img = document.createElement("img");
+    img.src = "assets/icons/rewers.webp";
+    container.appendChild(img);
+  }
+}
+
+// Pobieranie kart z JSON-a
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
     .then(res => res.json())
     .then(data => {
-      cards = data;
+      cards = data || [];
       renderCards();
       if (isGamemaster()) updateCardJsonPreview();
+    })
+    .catch(() => {
+      renderPlaceholders(); // fallback jeśli brak pliku
     });
 }
 
+// Wyświetlanie kart na stronie
 function renderCards() {
   container.innerHTML = "";
   cards.forEach(card => {
@@ -26,15 +41,16 @@ function renderCards() {
   });
 }
 
+// Pokazuje popup do odblokowania karty
 function showPopup(card) {
   currentCard = card;
   document.getElementById("unlock-popup").style.display = "block";
 }
 
-async function submitCode() {
+// Obsługa odblokowywania
+function submitCode() {
   const input = document.getElementById("code-input").value.trim();
-  const hash = await sha256(input);
-  if (hash === currentCard.codeHash) {
+  if (input === currentCard.code) {
     localStorage.setItem("card-" + currentCard.id, true);
     renderCards();
     alert("Odblokowano!");
@@ -44,11 +60,7 @@ async function submitCode() {
   document.getElementById("unlock-popup").style.display = "none";
 }
 
-async function sha256(str) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, "0")).join("");
-}
-
+// Panel administratora
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
@@ -66,7 +78,8 @@ function updateAdminPanel() {
   updatePlayersList(); // z chat.js
 }
 
-async function addCard() {
+// Dodaje nową kartę i kod
+function addCard() {
   const fileInput = document.getElementById("card-upload");
   const code = document.getElementById("card-code").value.trim();
 
@@ -78,23 +91,24 @@ async function addCard() {
   const file = fileInput.files[0];
   const fileName = "card-" + (cards.length + 1) + "." + file.name.split('.').pop();
   const imagePath = "assets/cards/" + fileName;
-  const hash = await sha256(code);
 
   cards.push({
     id: "card-" + (cards.length + 1),
     image: imagePath,
-    codeHash: hash
+    code: code
   });
 
   updateCardJsonPreview();
   alert("Dodano! Prześlij ręcznie plik obrazka do: " + imagePath);
 }
 
+// Podgląd JSON-a w panelu GM-a
 function updateCardJsonPreview() {
   const el = document.getElementById("card-json-preview");
   if (el) el.textContent = JSON.stringify(cards, null, 2);
 }
 
+// Pobieranie JSON-a
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -104,6 +118,7 @@ function downloadJSON() {
   a.click();
 }
 
+// Inicjalizacja
 fetchCards();
 setInterval(fetchCards, 5000);
 updateAdminPanel();
