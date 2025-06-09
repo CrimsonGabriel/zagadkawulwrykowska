@@ -17,7 +17,7 @@ function renderCards() {
   cards.forEach(card => {
     const unlocked = localStorage.getItem("card-" + card.id);
     const img = document.createElement("img");
-    img.src = unlocked ? card.image : "assets/icons/question.png";
+    img.src = unlocked ? card.image : "assets/icons/rewers.webp";
     img.onclick = () => {
       if (!unlocked) showPopup(card);
     };
