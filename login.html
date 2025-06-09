@@ -9,6 +9,7 @@
 </head>
 <body>
   <script>
+    // ⛔ Blokuj dostęp bez wcześniejszego odblokowania z index.html
     if (!localStorage.getItem("allowLogin")) {
       document.body.innerHTML = "<h1 style='color:red;text-align:center'>⛔ Dostęp zabroniony</h1>";
     }
@@ -23,14 +24,14 @@
   </div>
 
   <script>
-    const ALLOWED_LOGIN = "wulwryk";
-    const PASSWORD = "123";
+    const ALLOWED_LOGIN = "wulwryczek";
+    const ALLOWED_PASS = "123";
 
     function login() {
       const login = document.getElementById("login").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (login === ALLOWED_LOGIN && password === PASSWORD) {
+      if (login === ALLOWED_LOGIN && password === ALLOWED_PASS) {
         localStorage.setItem("isGM", "true");
         window.location.href = "index.html";
       } else {
@@ -40,4 +41,3 @@
   </script>
 </body>
 </html>
-
