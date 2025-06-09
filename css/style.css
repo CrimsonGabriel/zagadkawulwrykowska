@@ -98,3 +98,17 @@ img {
   opacity: 0;
 }
 
+#code-entry {
+  margin-top: 20px;
+}
+
+#code-entry input {
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  background: #222;
+  color: #fff;
+}
+
+

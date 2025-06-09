@@ -1,7 +1,6 @@
 // Plik main.js
 const container = document.getElementById("card-container");
 let cards = [];
-let currentCard = null;
 
 function getCardsFromStorage() {
   try {
@@ -43,42 +42,40 @@ function fetchCards() {
 function renderCards() {
   container.innerHTML = "";
   cards.forEach(card => {
-    const unlocked = localStorage.getItem("card-" + card.id);
+    const unlocked = localStorage.getItem("card-" + card.id) === "true";
     const img = document.createElement("img");
     img.src = unlocked ? card.image : "assets/icons/rewers.webp";
     img.classList.add("card-img");
-    img.onclick = () => {
-      if (!unlocked) showPopup(card, img);
-    };
     container.appendChild(img);
   });
 }
 
-function showPopup(card, imgElement) {
-  currentCard = card;
-  const popup = document.getElementById("unlock-popup");
-  popup.style.display = "block";
+// Obsługa kodu globalnie – z animacją
+document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("code-input");
-  input.value = "";
-  input.placeholder = "Wpisz kod...";
-  input.focus();
 
-  input.onkeydown = (e) => {
+  input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      const inputVal = input.value.trim();
-      if (inputVal === currentCard.code) {
-        localStorage.setItem("card-" + currentCard.id, true);
-        imgElement.classList.add("flip-fade");
-        setTimeout(renderCards, 500);
+      const code = input.value.trim();
+      const match = cards.find(card => card.code === code);
+
+      if (match) {
+        const cardIndex = cards.findIndex(c => c.id === match.id);
+        const imgEl = container.children[cardIndex];
+        imgEl.classList.add("flip-fade");
+
+        localStorage.setItem("card-" + match.id, "true");
+        input.value = "";
+
+        setTimeout(renderCards, 500); // pozwól animacji się odtworzyć
       } else {
         input.style.border = "1px solid red";
         input.value = "";
         input.placeholder = "Błędny kod";
       }
-      popup.style.display = "none";
     }
-  };
-}
+  });
+});
 
 function updateAdminPanel() {
   if (!isGamemaster()) return;
