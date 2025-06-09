@@ -174,7 +174,7 @@ function clearChat() {
 }
 
 function deleteLastN() {
-  const n = parseInt(document.getElementById("del-last-n").value);
+  const n = parseInt(document.getElementById("del-n").value);
   if (!n || n <= 0) return;
 
   const entries = Object.entries(fullMessageMap);
@@ -183,13 +183,14 @@ function deleteLastN() {
 }
 
 function deleteFirstN() {
-  const n = parseInt(document.getElementById("del-first-n").value);
+  const n = parseInt(document.getElementById("del-n").value);
   if (!n || n <= 0) return;
 
   const entries = Object.entries(fullMessageMap);
   const toDelete = entries.slice(0, n);
   toDelete.forEach(([id]) => db.ref("chat/" + id).remove());
 }
+
 
 // 🔥 INIT
 subscribeToNicknames();
