@@ -83,7 +83,7 @@ function updateAdminPanel() {
   document.getElementById("admin-panel").style.display = "block";
   const statusBar = document.getElementById("status-bar");
   if (statusBar) {
-    statusBar.innerHTML = 👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>;
+    statusBar.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
   }
 
   const adminControls = document.getElementById("admin-controls");
