@@ -153,8 +153,8 @@ function updatePlayersListUI() {
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
         <span>${id} → <strong>${current}</strong></span>
         <input type="text" placeholder="Nowe imię" id="rename-${id}" style="width:100px;" />
+		<button onclick="renamePlayer('${id}')">Zmień</button>
         <input type="color" value="${color}" id="color-${id}" onchange="setColor('${id}')" title="Wybierz kolor"/>
-        <button onclick="renamePlayer('${id}')">Zmień</button>
         <button onclick="banPlayer('${id}')">🚫 Ban</button>
         <button onclick="unbanPlayer('${id}')">✅ Unban</button>
       </div>
