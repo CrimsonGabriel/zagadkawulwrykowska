@@ -9,14 +9,32 @@
   <link rel="icon" href="../sg.ico" type="image/webp">
   <script src="js/auth.js"></script>
 </head>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCfqHKYj2jAfRWm3bMqtBwfyiOtHGH5fkk",
+    authDomain: "zagadkawulwrykowska.firebaseapp.com",
+    databaseURL: "https://zagadkawulwrykowska-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "zagadkawulwrykowska",
+    storageBucket: "zagadkawulwrykowska.appspot.com",
+    messagingSenderId: "518421177191",
+    appId: "1:518421177191:web:fbd8dcb79c723e9ddf05c2"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
 <body>
   <div id="status-bar"></div>
+
   <h1>Zagadka Wulwryka</h1>
   <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
 
   <div id="card-container"></div>
 
-  <!-- Popup wewnątrz każdej karty zostaje usunięty – teraz input pojawia się per karta -->
   <div id="chat">
     <div id="chat-log"></div>
     <input id="chat-input" placeholder="Napisz coś..." onkeydown="if (event.key === 'Enter') sendMessage()" />
