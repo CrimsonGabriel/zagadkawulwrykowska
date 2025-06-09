@@ -18,9 +18,13 @@ function saveCardsToStorage(cards) {
 function renderPlaceholders() {
   container.innerHTML = "";
   for (let i = 0; i < 5; i++) {
-    const img = document.createElement("img");
-    img.src = "assets/icons/rewers.webp";
-    container.appendChild(img);
+    const placeholder = document.createElement("div");
+    placeholder.className = "card";
+    placeholder.innerHTML = `<div class="inner">
+      <div class="front"><img src="assets/icons/rewers.webp"/></div>
+      <div class="back"><img src="assets/icons/rewers.webp"/></div>
+    </div>`;
+    container.appendChild(placeholder);
   }
 }
 
@@ -45,12 +49,19 @@ function renderCards() {
   cards.forEach(card => {
     const unlocked = localStorage.getItem("card-" + card.id);
 
-    const cardWrapper = document.createElement("div");
-    cardWrapper.className = "card";
+    const wrapper = document.createElement("div");
+    wrapper.className = "card";
 
-    const img = document.createElement("img");
-    img.src = unlocked ? card.image : "assets/icons/rewers.webp";
-    cardWrapper.appendChild(img);
+    const inner = document.createElement("div");
+    inner.className = "inner";
+
+    const front = document.createElement("div");
+    front.className = "front";
+    front.innerHTML = `<img src="assets/icons/rewers.webp">`;
+
+    const back = document.createElement("div");
+    back.className = "back";
+    back.innerHTML = `<img src="${card.image}">`;
 
     if (!unlocked) {
       const input = document.createElement("input");
@@ -61,8 +72,8 @@ function renderCards() {
         if (e.key === "Enter") {
           if (input.value.trim() === card.code) {
             localStorage.setItem("card-" + card.id, true);
-            cardWrapper.classList.add("reveal");
-            setTimeout(renderCards, 400);
+            wrapper.classList.add("reveal");
+            setTimeout(renderCards, 600);
           } else {
             input.style.border = "1px solid red";
             input.value = "";
@@ -70,10 +81,15 @@ function renderCards() {
           }
         }
       };
-      cardWrapper.appendChild(input);
+      wrapper.appendChild(input);
+    } else {
+      wrapper.classList.add("reveal");
     }
 
-    container.appendChild(cardWrapper);
+    inner.appendChild(front);
+    inner.appendChild(back);
+    wrapper.appendChild(inner);
+    container.appendChild(wrapper);
   });
 }
 
@@ -91,7 +107,7 @@ function updateAdminPanel() {
     adminControls.style.display = "block";
   }
 
-  updatePlayersList(); // z chat.js
+  updatePlayersList();
 }
 
 function addCard() {
