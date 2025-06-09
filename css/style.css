@@ -75,7 +75,6 @@ body {
   display: flex;
   justify-content: center;
   gap: 50px;
-  padding: 20px 0;
   min-height: 600px;
 }
 
@@ -87,7 +86,7 @@ img {
 
 .card-img {
   width: 250px;
-  height: 350px;
+  height: 400px;
   transition: transform 0.5s ease, opacity 0.5s ease;
   border-radius: 10px;
   object-fit: cover;
