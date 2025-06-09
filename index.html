@@ -44,8 +44,7 @@
 
   <div id="chat">
     <div id="chat-log"></div>
-    <input id="chat-input" placeholder="Napisz coś..." />
-    <button onclick="sendMessage()">Wyślij</button>
+    <input id="chat-input" placeholder="Napisz coś..." onkeydown="if (event.key === 'Enter') sendMessage()" />
   </div>
 
   <div id="admin-panel" class="slide-panel" style="display:none;">
