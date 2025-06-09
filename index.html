@@ -58,12 +58,11 @@
   <hr/>
   <p><strong>Zarządzanie czatem</strong></p>
   <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
-
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <input type="number" id="del-n" placeholder="X" style="width: 50px;" />
-    <button onclick="deleteLastN()">Usuń najnowsze</button>
-    <button onclick="deleteFirstN()">Usuń najstarsze</button>
-  </div>
+	<div class="chat-tools">
+  <input type="number" id="del-n" placeholder="X" />
+  <button onclick="deleteLastN()">Usuń najnowsze</button>
+  <button onclick="deleteFirstN()">Usuń najstarsze</button>
+	</div>
 </div>
 
 </div>
