@@ -139,6 +139,14 @@ function downloadJSON() {
   a.click();
 }
 
+function clearLocalCards() {
+  if (confirm("Czy na pewno chcesz usunąć wszystkie lokalne karty?")) {
+    localStorage.removeItem("cards");
+    fetchCards();
+    alert("Lokalne karty zostały usunięte.");
+  }
+}
+
 // Init
 fetchCards();
 updateAdminPanel();
