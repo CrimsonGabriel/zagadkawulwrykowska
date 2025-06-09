@@ -1,3 +1,4 @@
+// Plik main.js
 const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;
@@ -14,7 +15,6 @@ function saveCardsToStorage(cards) {
   localStorage.setItem("cards", JSON.stringify(cards));
 }
 
-// Renderuj placeholdery
 function renderPlaceholders() {
   container.innerHTML = "";
   for (let i = 0; i < 5; i++) {
@@ -24,7 +24,6 @@ function renderPlaceholders() {
   }
 }
 
-// Pobieranie kart z JSON lub localStorage
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
     .then(res => res.json())
@@ -35,47 +34,49 @@ function fetchCards() {
       if (isGamemaster()) updateCardJsonPreview();
     })
     .catch(() => {
-      // fallback na same localStorage
       cards = getCardsFromStorage();
       if (!cards.length) renderPlaceholders();
       else renderCards();
     });
 }
 
-// Render kart
 function renderCards() {
   container.innerHTML = "";
   cards.forEach(card => {
     const unlocked = localStorage.getItem("card-" + card.id);
+
+    const cardWrapper = document.createElement("div");
+    cardWrapper.className = "card";
+
     const img = document.createElement("img");
     img.src = unlocked ? card.image : "assets/icons/rewers.webp";
-    img.onclick = () => {
-      if (!unlocked) showPopup(card);
-    };
-    container.appendChild(img);
+    cardWrapper.appendChild(img);
+
+    if (!unlocked) {
+      const input = document.createElement("input");
+      input.className = "code-input";
+      input.type = "text";
+      input.placeholder = "Wpisz kod...";
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") {
+          if (input.value.trim() === card.code) {
+            localStorage.setItem("card-" + card.id, true);
+            cardWrapper.classList.add("reveal");
+            setTimeout(renderCards, 400);
+          } else {
+            input.style.border = "1px solid red";
+            input.value = "";
+            input.placeholder = "Błędny kod";
+          }
+        }
+      };
+      cardWrapper.appendChild(input);
+    }
+
+    container.appendChild(cardWrapper);
   });
 }
 
-// Popup
-function showPopup(card) {
-  currentCard = card;
-  document.getElementById("unlock-popup").style.display = "block";
-}
-
-// Odbokowywanie
-function submitCode() {
-  const input = document.getElementById("code-input").value.trim();
-  if (input === currentCard.code) {
-    localStorage.setItem("card-" + currentCard.id, true);
-    renderCards();
-    alert("Odblokowano!");
-  } else {
-    alert("Błędny kod.");
-  }
-  document.getElementById("unlock-popup").style.display = "none";
-}
-
-// Panel GM
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
@@ -93,7 +94,6 @@ function updateAdminPanel() {
   updatePlayersList(); // z chat.js
 }
 
-// Dodanie nowej karty
 function addCard() {
   const fileInput = document.getElementById("card-upload");
   const code = document.getElementById("card-code").value.trim();
@@ -123,13 +123,11 @@ function addCard() {
   alert("Dodano! Prześlij ręcznie plik obrazka do: " + imagePath);
 }
 
-// Podgląd JSON
 function updateCardJsonPreview() {
   const el = document.getElementById("card-json-preview");
   if (el) el.textContent = JSON.stringify(cards, null, 2);
 }
 
-// Pobieranie JSON
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -147,6 +145,5 @@ function clearLocalCards() {
   }
 }
 
-// Init
 fetchCards();
 updateAdminPanel();
