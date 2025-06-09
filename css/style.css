@@ -163,7 +163,7 @@ img {
 #chat-toggle {
   position: fixed;
   top: 50%;
-  right: 300px;
+  right: 300px; 
   transform: translateY(-50%);
   background: #222;
   color: #fff;
@@ -171,7 +171,10 @@ img {
   padding: 5px 10px;
   z-index: 1001;
   cursor: pointer;
+  transition: right 0.3s;
 }
+
+
 
 #chat-log {
   flex: 1;

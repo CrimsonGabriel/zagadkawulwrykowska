@@ -6,38 +6,56 @@
   <title>Logowanie Wulwryka</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="../sg.ico" type="image/webp">
+
+  <script>
+    const allowed = localStorage.getItem("allowLogin");
+
+    if (!allowed) {
+      document.write(`
+        <title>403 Forbidden</title>
+        <style>
+          body {
+            background: #000;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 100px;
+          }
+        </style>
+      </head><body>
+        <h1 style="color:red; font-size: 36px;">⛔ 403 - Brak dostępu</h1>
+        <p style="font-size: 18px;">Musisz najpierw wejść przez stronę główną.</p>
+      `);
+      throw new Error("403 - Brak dostępu");
+    } else {
+      document.write(`
+      </head><body>
+        <div id="login-wrapper">
+          <h1>🔐 Logowanie dla GM'a</h1>
+          <div id="login-form">
+            <input type="text" id="login" placeholder="Login"><br>
+            <input type="password" id="password" placeholder="Hasło"><br>
+            <button onclick="login()">Zaloguj</button>
+            <p id="login-error" style="color:red;"></p>
+          </div>
+        </div>
+        <script>
+          const ALLOWED_LOGIN = "wulwryczek";
+          const ALLOWED_PASS = "zagadkowo2137";
+          function login() {
+            const login = document.getElementById("login").value.trim();
+            const password = document.getElementById("password").value.trim();
+            if (login === ALLOWED_LOGIN && password === ALLOWED_PASS) {
+              localStorage.setItem("isGM", "true");
+              localStorage.removeItem("allowLogin");
+              window.location.href = "index.html";
+            } else {
+              document.getElementById("login-error").innerText = "Błędny login lub hasło!";
+            }
+          }
+        <\/script>
+      `);
+    }
+  </script>
 </head>
-<body>
-  <script>
-    // ⛔ Blokuj dostęp bez wcześniejszego odblokowania z index.html
-    if (!localStorage.getItem("allowLogin")) {
-      document.body.innerHTML = "<h1 style='color:red;text-align:center'>⛔ Dostęp zabroniony</h1>";
-    }
-  </script>
-
-  <h1>🔐 Logowanie dla GM'a</h1>
-  <div id="login-form">
-    <input type="text" id="login" placeholder="Login"><br>
-    <input type="password" id="password" placeholder="Hasło"><br>
-    <button onclick="login()">Zaloguj</button>
-    <p id="login-error" style="color:red;"></p>
-  </div>
-
-  <script>
-    const ALLOWED_LOGIN = "wulwryczek";
-    const ALLOWED_PASS = "zagadkowo2137";
-
-    function login() {
-      const login = document.getElementById("login").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (login === ALLOWED_LOGIN && password === ALLOWED_PASS) {
-        localStorage.setItem("isGM", "true");
-        window.location.href = "index.html";
-      } else {
-        document.getElementById("login-error").innerText = "Błędny login lub hasło!";
-      }
-    }
-  </script>
-</body>
 </html>

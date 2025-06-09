@@ -95,10 +95,6 @@ function setupPanelToggles() {
   }
 }
 
-
-
-
-
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
@@ -170,6 +166,15 @@ function clearLocalCards() {
     fetchCards();
     alert("Lokalne karty zostały usunięte.");
   }
+}
+
+function isGamemaster() {
+  return localStorage.getItem("gm") === "true";
+}
+
+function logout() {
+  localStorage.removeItem("gm");
+  location.reload();
 }
 
 // === DOMContentLoaded Init ===
