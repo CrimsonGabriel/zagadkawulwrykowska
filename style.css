@@ -84,3 +84,14 @@ img {
 .chat-tools button {
   padding: 4px 10px;
 }
+
+.card-img {
+  width: 100px;
+  height: 150px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.flip-fade {
+  transform: rotateY(180deg) scale(1.1);
+  opacity: 0.2;
+}
