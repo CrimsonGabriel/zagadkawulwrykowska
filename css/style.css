@@ -75,14 +75,17 @@ img {
   padding: 4px 10px;
 }
 
-/* Karty – efekt flip+fade przy odkrywaniu */
 .card-img {
   width: 100px;
   height: 150px;
   transition: transform 0.5s ease, opacity 0.5s ease;
+  border-radius: 8px;
+  object-fit: cover;
+  transform-origin: center;
 }
 
 .flip-fade {
-  transform: rotateY(180deg) scale(1.1);
-  opacity: 0.2;
+  transform: rotateY(180deg) scale(1.05);
+  opacity: 0;
 }
+
