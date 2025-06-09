@@ -1,6 +1,7 @@
 // Plik main.js
 const container = document.getElementById("card-container");
 let cards = [];
+let currentCard = null;
 
 function getCardsFromStorage() {
   try {
@@ -14,20 +15,6 @@ function saveCardsToStorage(cards) {
   localStorage.setItem("cards", JSON.stringify(cards));
 }
 
-function renderPlaceholders() {
-  container.innerHTML = "";
-  for (let i = 0; i < 5; i++) {
-    const placeholder = document.createElement("div");
-    placeholder.className = "card";
-    placeholder.innerHTML = `
-      <div class="inner">
-        <div class="front"><img src="assets/icons/rewers.webp"/></div>
-        <div class="back"><img src="assets/icons/rewers.webp"/></div>
-      </div>`;
-    container.appendChild(placeholder);
-  }
-}
-
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
     .then(res => res.json())
@@ -39,21 +26,20 @@ function fetchCards() {
     })
     .catch(() => {
       cards = getCardsFromStorage();
-      if (!cards.length) renderPlaceholders();
-      else renderCards();
+      renderCards();
     });
 }
 
 function renderCards() {
   container.innerHTML = "";
-  cards.forEach(card => {
+  cards.slice(0, 5).forEach(card => {
     const unlocked = localStorage.getItem("card-" + card.id) === "true";
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "card" + (unlocked ? " reveal" : "");
+    const cardWrapper = document.createElement("div");
+    cardWrapper.className = "card";
 
-    const inner = document.createElement("div");
-    inner.className = "inner";
+    const cardInner = document.createElement("div");
+    cardInner.className = "inner" + (unlocked ? " flipped" : "");
 
     const front = document.createElement("div");
     front.className = "front";
@@ -63,35 +49,40 @@ function renderCards() {
     back.className = "back";
     back.innerHTML = `<img src="${card.image}">`;
 
-    inner.appendChild(front);
-    inner.appendChild(back);
-    wrapper.appendChild(inner);
+    cardInner.appendChild(front);
+    cardInner.appendChild(back);
+    cardWrapper.appendChild(cardInner);
 
     if (!unlocked) {
-      const input = document.createElement("input");
-      input.className = "code-input";
-      input.type = "text";
-      input.placeholder = "Wpisz kod...";
-      input.onkeydown = (e) => {
-        if (e.key === "Enter") {
-          if (input.value.trim() === card.code) {
-            localStorage.setItem("card-" + card.id, "true");
-            wrapper.classList.add("reveal");
-            setTimeout(() => {
-              renderCards(); // odśwież całość by usunąć input
-            }, 800);
-          } else {
-            input.style.border = "1px solid red";
-            input.value = "";
-            input.placeholder = "Błędny kod";
-          }
-        }
-      };
-      wrapper.appendChild(input);
+      cardWrapper.onclick = () => showCodeInput(cardWrapper, card);
     }
 
-    container.appendChild(wrapper);
+    container.appendChild(cardWrapper);
   });
+}
+
+function showCodeInput(wrapper, card) {
+  if (wrapper.querySelector("input")) return;
+
+  const input = document.createElement("input");
+  input.className = "code-input";
+  input.type = "text";
+  input.placeholder = "Wpisz kod...";
+  input.onkeydown = (e) => {
+    if (e.key === "Enter") {
+      if (input.value.trim() === card.code) {
+        localStorage.setItem("card-" + card.id, "true");
+        wrapper.querySelector(".inner").classList.add("flipped");
+        input.remove();
+      } else {
+        input.style.border = "1px solid red";
+        input.value = "";
+        input.placeholder = "Błędny kod";
+      }
+    }
+  };
+  wrapper.appendChild(input);
+  input.focus();
 }
 
 function updateAdminPanel() {
@@ -131,9 +122,9 @@ function addCard() {
   };
 
   cards.push(newCard);
-  const newLocalCards = getCardsFromStorage();
-  newLocalCards.push(newCard);
-  saveCardsToStorage(newLocalCards);
+  const local = getCardsFromStorage();
+  local.push(newCard);
+  saveCardsToStorage(local);
 
   updateCardJsonPreview();
   renderCards();
