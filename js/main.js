@@ -169,11 +169,13 @@ function clearLocalCards() {
 }
 
 function isGamemaster() {
-  return localStorage.getItem("gm") === "true";
+  return localStorage.getItem("isGM") === "true";
 }
 
 function logout() {
-  localStorage.removeItem("gm");
+  localStorage.removeItem("isGM");
+  localStorage.removeItem("gm"); // na wszelki wypadek
+  localStorage.removeItem("allowLogin");
   location.reload();
 }
 
