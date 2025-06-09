@@ -7,12 +7,7 @@ body {
   text-align: center;
 }
 
-img {
-  width: 250px;
-  height: 350px;
-  margin: 5px;
-  cursor: pointer;
-}
+
 
 #chat {
   margin-top: 30px;
@@ -83,6 +78,11 @@ img {
   padding: 30px 0;
 }
 
+img {
+  width: 90px;
+  margin: 5px;
+  cursor: pointer;
+}
 
 .card-img {
   width: 250px;
