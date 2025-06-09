@@ -24,27 +24,31 @@
   </div>
 
   <script>
-    const ALLOWED_LOGIN = "wulwryk";
-    const PASSWORD_HASH = "4d17608dbbd2ab4f4b0bb8779d90a2927c31ac84d7b0981b8eb03b02dfe101df"; // hash("zagadkowo2137")
+  if (!localStorage.getItem("allowLogin")) {
+    document.body.innerHTML = "<h1 style='color:red;text-align:center'>⛔ Dostęp zabroniony</h1>";
+  }
 
-    async function login() {
-      const login = document.getElementById("login").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const hash = await sha256(password);
+  const ALLOWED_LOGIN = "wulwryk";
+  const PASSWORD_HASH = "4d17608dbbd2ab4f4b0bb8779d90a2927c31ac84d7b0981b8eb03b02dfe101df"; // zagadkowo2137
 
-      if (login === ALLOWED_LOGIN && hash === PASSWORD_HASH) {
-        localStorage.setItem("isGM", "true");
-        window.location.href = "index.html";
-      } else {
-        document.getElementById("login-error").innerText = "Błędny login lub hasło!";
-      }
+  async function login() {
+    const login = document.getElementById("login").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const hash = await sha256(password);
+
+    if (login === ALLOWED_LOGIN && hash === PASSWORD_HASH) {
+      localStorage.setItem("isGM", "true");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("login-error").innerText = "Błędny login lub hasło!";
     }
+  }
 
-    async function sha256(str) {
-      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
-    }
-  </script>
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+</script>
 </body>
 </html>
 
