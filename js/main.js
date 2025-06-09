@@ -1,7 +1,6 @@
 // Plik main.js
 const container = document.getElementById("card-container");
 let cards = [];
-let currentCard = null;
 
 function getCardsFromStorage() {
   try {
@@ -20,10 +19,11 @@ function renderPlaceholders() {
   for (let i = 0; i < 5; i++) {
     const placeholder = document.createElement("div");
     placeholder.className = "card";
-    placeholder.innerHTML = `<div class="inner">
-      <div class="front"><img src="assets/icons/rewers.webp"/></div>
-      <div class="back"><img src="assets/icons/rewers.webp"/></div>
-    </div>`;
+    placeholder.innerHTML = `
+      <div class="inner">
+        <div class="front"><img src="assets/icons/rewers.webp"/></div>
+        <div class="back"><img src="assets/icons/rewers.webp"/></div>
+      </div>`;
     container.appendChild(placeholder);
   }
 }
@@ -47,10 +47,10 @@ function fetchCards() {
 function renderCards() {
   container.innerHTML = "";
   cards.forEach(card => {
-    const unlocked = localStorage.getItem("card-" + card.id);
+    const unlocked = localStorage.getItem("card-" + card.id) === "true";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "card";
+    wrapper.className = "card" + (unlocked ? " reveal" : "");
 
     const inner = document.createElement("div");
     inner.className = "inner";
@@ -63,6 +63,10 @@ function renderCards() {
     back.className = "back";
     back.innerHTML = `<img src="${card.image}">`;
 
+    inner.appendChild(front);
+    inner.appendChild(back);
+    wrapper.appendChild(inner);
+
     if (!unlocked) {
       const input = document.createElement("input");
       input.className = "code-input";
@@ -71,9 +75,11 @@ function renderCards() {
       input.onkeydown = (e) => {
         if (e.key === "Enter") {
           if (input.value.trim() === card.code) {
-            localStorage.setItem("card-" + card.id, true);
+            localStorage.setItem("card-" + card.id, "true");
             wrapper.classList.add("reveal");
-            setTimeout(renderCards, 600);
+            setTimeout(() => {
+              renderCards(); // odśwież całość by usunąć input
+            }, 800);
           } else {
             input.style.border = "1px solid red";
             input.value = "";
@@ -82,13 +88,8 @@ function renderCards() {
         }
       };
       wrapper.appendChild(input);
-    } else {
-      wrapper.classList.add("reveal");
     }
 
-    inner.appendChild(front);
-    inner.appendChild(back);
-    wrapper.appendChild(inner);
     container.appendChild(wrapper);
   });
 }
@@ -156,6 +157,7 @@ function downloadJSON() {
 function clearLocalCards() {
   if (confirm("Czy na pewno chcesz usunąć wszystkie lokalne karty?")) {
     localStorage.removeItem("cards");
+    cards.forEach(c => localStorage.removeItem("card-" + c.id));
     fetchCards();
     alert("Lokalne karty zostały usunięte.");
   }
