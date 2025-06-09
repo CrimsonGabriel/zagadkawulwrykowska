@@ -23,5 +23,10 @@
     "id": "card-5",
     "image": "assets/icons/Runa_05.webp",
     "code": "wsad"
+  },
+  {
+    "id": "card-6",
+    "image": "assets/cards/card-6.gif",
+    "code": "dymanko"
   }
 ]
