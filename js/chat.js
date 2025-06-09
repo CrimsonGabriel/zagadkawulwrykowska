@@ -21,7 +21,7 @@ function renderChat(messages) {
     const name = msg.name;
     const display = nicknameMap[name] || name;
     const label = name === "GM"
-      ? '<span style="color:red;">GM - Wulwryk</span>'
+      ? '<span style="color:red;">GM Wulwryk</span>'
       : display;
 
     const date = new Date(msg.timestamp || Date.now());
