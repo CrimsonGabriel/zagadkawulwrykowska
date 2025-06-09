@@ -1,3 +1,4 @@
+//Plik main.html
 const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;

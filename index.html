@@ -1,3 +1,4 @@
+<!-- Plik index.html -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="icon" href="../sg.ico" type="image/webp">
 </head>
+
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -24,11 +26,12 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 </script>
+
 <body>
   <div id="status-bar"></div>
 
   <h1>Zagadka Wulwryka</h1>
-  <button onclick="goToLogin()">🔐 Logowanie dla GM'a</button>
+  <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
 
   <div id="card-container"></div>
 
@@ -45,32 +48,55 @@
   </div>
 
   <div id="admin-panel" class="slide-panel" style="display:none;">
-  <h3>Panel Wulwryka 👑</h3>
-  <input type="file" id="card-upload"/>
-  <input type="text" id="card-code" placeholder="Kod do tej karty"/>
-  <button onclick="addCard()">Dodaj kartę</button>
-  <pre id="card-json-preview"></pre>
-  <button onclick="downloadJSON()">Pobierz cards.json</button>
+    <h3>Panel Wulwryka 👑</h3>
+    <input type="file" id="card-upload"/>
+    <input type="text" id="card-code" placeholder="Kod do tej karty"/>
+    <button onclick="addCard()">Dodaj kartę</button>
+    <pre id="card-json-preview"></pre>
+    <button onclick="downloadJSON()">Pobierz cards.json</button>
 
-  <h4>Gracze aktywni</h4>
-  <ul id="players-list"></ul>
+    <h4>Gracze aktywni</h4>
+    <ul id="players-list"></ul>
 
-<div id="admin-controls">
-  <hr/>
-  <p><strong>Zarządzanie czatem</strong></p>
-  <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
-	<div class="chat-tools">
-  <input type="number" id="del-n" placeholder="X" />
-  <button onclick="deleteLastN()">Usuń najnowsze</button>
-  <button onclick="deleteFirstN()">Usuń najstarsze</button>
-	</div>
-</div>
-
-</div>
-
+    <div id="admin-controls">
+      <hr/>
+      <p><strong>Zarządzanie czatem</strong></p>
+      <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
+      <div class="chat-tools">
+        <input type="number" id="del-n" placeholder="X" />
+        <button onclick="deleteLastN()">Usuń najnowsze</button>
+        <button onclick="deleteFirstN()">Usuń najstarsze</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/auth.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    const gmButton = document.getElementById("gm-login");
+    const secretSequence = [];
+    const secretHash = "f7c8998b4d684aac3f5f8e32d0b1a410c8e07d04a88e80123c20dc13eabdebb7"; // sagatoherbata2137
+
+    document.addEventListener("keydown", async (e) => {
+      secretSequence.push(e.key);
+      if (secretSequence.length > 30) secretSequence.shift();
+
+      const typed = secretSequence.join('');
+      const hash = await sha256(typed);
+      if (hash === secretHash) {
+        gmButton.style.display = "inline-block";
+      }
+    });
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function goToLogin() {
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>

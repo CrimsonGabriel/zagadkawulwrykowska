@@ -1,3 +1,4 @@
+// Plik chat.js
 const chatLog = document.getElementById("chat-log");
 const input = document.getElementById("chat-input");
 
