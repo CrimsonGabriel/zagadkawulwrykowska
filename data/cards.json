@@ -2,26 +2,26 @@
   {
     "id": "card-1",
     "image": "assets/icons/Runa_01.webp",
-    "code": "kod123"
+    "code": "abc"
   },
   {
     "id": "card-2",
     "image": "assets/icons/Runa_02.webp",
-    "code": "kod123"
+    "code": "qwe"
   },
   {
     "id": "card-3",
     "image": "assets/icons/Runa_03.webp",
-    "code": "kod123"
+    "code": "asd"
   },
   {
     "id": "card-4",
     "image": "assets/icons/Runa_04.webp",
-    "code": "kod123"
+    "code": "zxc"
   },
   {
     "id": "card-5",
     "image": "assets/icons/Runa_05.webp",
-    "code": "kod123"
+    "code": "wsad"
   }
 ]
