@@ -1,32 +1,13 @@
-<!-- Plik index.html -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zagadka Wulwryka</title>
-  <link rel="stylesheet" href="css/style.css"/>
-  <link rel="icon" href="../sg.ico" type="image/webp">
-  <script src="js/auth.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" href="sg.ico" type="image/webp">
+  <script src="auth.js"></script>
 </head>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCfqHKYj2jAfRWm3bMqtBwfyiOtHGH5fkk",
-    authDomain: "zagadkawulwrykowska.firebaseapp.com",
-    databaseURL: "https://zagadkawulwrykowska-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "zagadkawulwrykowska",
-    storageBucket: "zagadkawulwrykowska.appspot.com",
-    messagingSenderId: "518421177191",
-    appId: "1:518421177191:web:fbd8dcb79c723e9ddf05c2"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
 
 <body>
   <div id="status-bar"></div>
@@ -35,12 +16,6 @@
   <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
 
   <div id="card-container"></div>
-
-  <div id="unlock-popup" style="display:none;">
-    <p>Wpisz kod aby odblokować kartę:</p>
-    <input type="text" id="code-input"/>
-    <button onclick="submitCode()">Odblo</button>
-  </div>
 
   <div id="chat">
     <div id="chat-log"></div>
@@ -54,8 +29,7 @@
     <button onclick="addCard()">Dodaj kartę</button>
     <pre id="card-json-preview"></pre>
     <button onclick="downloadJSON()">Pobierz cards.json</button>
-	<button onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
-
+    <button onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
 
     <h4>Gracze aktywni</h4>
     <ul id="players-list"></ul>
@@ -72,9 +46,7 @@
     </div>
   </div>
 
- 
-  <script src="js/chat.js"></script>
-  <script src="js/main.js"></script>
-
+  <script src="chat.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
