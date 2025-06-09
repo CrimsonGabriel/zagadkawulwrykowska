@@ -1,4 +1,5 @@
-/* Plik style.css */
+/* css/style.css */
+
 body {
   background: #111;
   color: #fff;
@@ -29,9 +30,9 @@ img {
   top: 0;
   right: 0;
   background: #222;
-  width: 300px;
+  width: 400px;
   height: 100%;
-  padding: 15px;
+  padding: 20px;
   overflow-y: auto;
   border-left: 2px solid #444;
 }
@@ -42,18 +43,6 @@ img {
   left: 10px;
   font-size: 14px;
   color: gold;
-}
-
-.slide-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  background: #222;
-  width: 400px;
-  height: 100%;
-  padding: 20px;
-  overflow-y: auto;
-  border-left: 2px solid #444;
 }
 
 #admin-controls {
@@ -68,6 +57,7 @@ img {
 #admin-controls button {
   margin-bottom: 10px;
 }
+
 .chat-tools {
   display: flex;
   justify-content: center;
@@ -85,3 +75,14 @@ img {
   padding: 4px 10px;
 }
 
+/* Karty – efekt flip+fade przy odkrywaniu */
+.card-img {
+  width: 100px;
+  height: 150px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.flip-fade {
+  transform: rotateY(180deg) scale(1.1);
+  opacity: 0.2;
+}
