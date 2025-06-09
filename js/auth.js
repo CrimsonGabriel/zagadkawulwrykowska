@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.querySelector('#gm-login');
   if (!loginBtn) return;
 
-  const SECRET_HASH = "4c896120d94959da4ac649a71d1beef038ab98138db0f53c1d5241f221a6a3aa"; // hash sagatoherbata2137
+  const SECRET_HASH = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"; // hash("123")
   loginBtn.style.display = "none";
 
   let buffer = "";
