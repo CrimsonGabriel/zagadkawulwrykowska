@@ -1,38 +1,20 @@
-/* css/style.css */
+/* === Global === */
+
 
 body {
   background: #111;
   color: #fff;
   font-family: sans-serif;
   text-align: center;
+  margin-top: 20px;
+}
+
+h1 {
+  padding-top: 20px;
 }
 
 
-
-#chat {
-  margin-top: 30px;
-}
-
-#chat-log {
-  max-height: 200px;
-  overflow-y: scroll;
-  background: #222;
-  padding: 10px;
-}
-
-.slide-panel {
-  display: none;
-  position: fixed;
-  top: 0;
-  right: 0;
-  background: #222;
-  width: 400px;
-  height: 100%;
-  padding: 20px;
-  overflow-y: auto;
-  border-left: 2px solid #444;
-}
-
+/* === Status Bar === */
 #status-bar {
   position: absolute;
   top: 5px;
@@ -40,6 +22,84 @@ body {
   font-size: 14px;
   color: gold;
 }
+
+
+/* === Card Container === */
+#card-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  min-height: 480px;
+}
+
+img {
+  width: 100px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.card-img {
+  width: 275px;
+  height: 450px;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  border-radius: 10px;
+  object-fit: cover;
+  transform-origin: center;
+}
+
+.flip-fade {
+  transform: rotateY(180deg) scale(1.05);
+  opacity: 0;
+}
+
+
+/* === Code Entry === */
+#code-entry {
+  margin-top: 20px;
+}
+
+#code-entry input {
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  background: #222;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+
+/* === Admin Panel === */
+#admin-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 100vh;
+  background-color: #222;
+  padding: 20px;
+  overflow-y: auto;
+  display: none;
+  z-index: 999;
+  transition: left 0.3s;
+  border-right: 2px solid #444;
+}
+
+#admin-toggle {
+  position: fixed;
+  top: 50%;
+  left: calc(400px + 40px);
+  transform: translateY(-50%);
+  background-color: #222;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  z-index: 1001;
+  transition: left 0.3s;
+}
+
+
 
 #admin-controls {
   text-align: center;
@@ -71,44 +131,122 @@ body {
   padding: 4px 10px;
 }
 
-#card-container {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  min-height: 600px;
+#card-json-preview {
+  text-align: left;
+  background: #111;
+  border: 1px solid #444;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin: 10px 0;
 }
 
-img {
-  width: 100px;
-  margin: 5px;
+
+/* === Chat Panel === */
+#chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #18181b;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: right 0.5s;
+  border-left: 2px solid #333;
+  overflow: hidden;
+}
+
+#chat-toggle {
+  position: fixed;
+  top: 50%;
+  right: 300px;
+  transform: translateY(-50%);
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  z-index: 1001;
   cursor: pointer;
 }
 
-.card-img {
-  width: 250px;
-  height: 400px;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  border-radius: 10px;
-  object-fit: cover;
-  transform-origin: center;
-}
-
-.flip-fade {
-  transform: rotateY(180deg) scale(1.05);
-  opacity: 0;
-}
-
-#code-entry {
-  margin-top: 20px;
-}
-
-#code-entry input {
-  padding: 6px;
+#chat-log {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
   font-size: 14px;
-  border-radius: 5px;
+  background: #1f1f23;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+#chat-input {
+  padding: 10px;
   border: none;
-  background: #222;
-  color: #fff;
+  background: #262626;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  min-height: 40px;
+  line-height: 1.4;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 
+
+
+/* === Chat Message Layout === */
+.chat-msg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  line-height: 1.4;
+  word-break: break-word;
+  gap: 10px;
+}
+
+.chat-msg span {
+  flex: 1;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.delete-btn:hover {
+  color: red;
+}
+
+
+/* === Slide Panel Hidden States === */
+body.chat-hidden #chat-panel {
+  right: -350px;
+}
+
+body.chat-hidden #chat-toggle {
+  right: 0;
+}
+
+body.admin-hidden #admin-panel {
+  left: -450px;
+}
+
+body.admin-hidden #admin-toggle {
+  left: 0;
+}

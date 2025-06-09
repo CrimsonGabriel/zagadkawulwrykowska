@@ -34,8 +34,7 @@ function fetchCards() {
     })
     .catch(() => {
       cards = getCardsFromStorage();
-      if (!cards.length) renderPlaceholders();
-      else renderCards();
+      cards.length ? renderCards() : renderPlaceholders();
     });
 }
 
@@ -50,45 +49,75 @@ function renderCards() {
   });
 }
 
-// Obsługa kodu globalnie – z animacją
-document.addEventListener("DOMContentLoaded", () => {
-  const input = document.getElementById("code-input");
-
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const code = input.value.trim();
-      const match = cards.find(card => card.code === code);
-
-      if (match) {
-        const cardIndex = cards.findIndex(c => c.id === match.id);
-        const imgEl = container.children[cardIndex];
-        imgEl.classList.add("flip-fade");
-
-        localStorage.setItem("card-" + match.id, "true");
-        input.value = "";
-
-        setTimeout(renderCards, 500); // pozwól animacji się odtworzyć
-      } else {
-        input.style.border = "1px solid red";
-        input.value = "";
-        input.placeholder = "Błędny kod";
-      }
-    }
+function showTemporaryMessage(msg) {
+  const div = document.createElement("div");
+  div.textContent = msg;
+  Object.assign(div.style, {
+    position: "fixed",
+    top: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    background: "#333",
+    padding: "10px 20px",
+    borderRadius: "10px",
+    color: "#fff",
+    zIndex: 1000,
   });
-});
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+
+function setupPanelToggles() {
+  const body = document.body;
+  const chatToggle = document.getElementById("chat-toggle");
+  const chatIcon = document.getElementById("chat-icon");
+  const adminToggle = document.getElementById("admin-toggle");
+  const adminIcon = document.getElementById("admin-icon");
+
+  function flipChevron(icon, direction) {
+    icon.style.transform = direction === "right" ? "scaleX(-1)" : "scaleX(1)";
+  }
+
+  if (chatToggle && chatIcon) {
+    chatToggle.addEventListener("click", () => {
+      const hidden = body.classList.toggle("chat-hidden");
+      flipChevron(chatIcon, hidden ? "left" : "right");
+    });
+    flipChevron(chatIcon, body.classList.contains("chat-hidden") ? "left" : "right");
+  }
+
+  if (adminToggle && adminIcon) {
+    adminToggle.addEventListener("click", () => {
+      const hidden = body.classList.toggle("admin-hidden");
+      flipChevron(adminIcon, hidden ? "right" : "left");
+    });
+    flipChevron(adminIcon, body.classList.contains("admin-hidden") ? "right" : "left");
+  }
+}
+
+
+
+
 
 function updateAdminPanel() {
   if (!isGamemaster()) return;
+
   document.getElementById("admin-panel").style.display = "block";
+
+  const adminToggle = document.getElementById("admin-toggle");
+  if (adminToggle) adminToggle.style.display = "block";
+
   const statusBar = document.getElementById("status-bar");
   if (statusBar) {
     statusBar.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
   }
+
   const adminControls = document.getElementById("admin-controls");
   if (adminControls) {
     adminControls.style.display = "block";
   }
-  updatePlayersList(); // z chat.js
+
+  updatePlayersList();
 }
 
 function addCard() {
@@ -111,6 +140,7 @@ function addCard() {
   };
 
   cards.push(newCard);
+
   const newLocalCards = getCardsFromStorage();
   newLocalCards.push(newCard);
   saveCardsToStorage(newLocalCards);
@@ -142,5 +172,42 @@ function clearLocalCards() {
   }
 }
 
+// === DOMContentLoaded Init ===
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("code-input");
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const code = input.value.trim();
+      const match = cards.find(card => card.code === code);
+
+      if (match) {
+        const alreadyUnlocked = localStorage.getItem("card-" + match.id) === "true";
+        if (alreadyUnlocked) {
+          showTemporaryMessage("🔓 Karta już odblokowana");
+          input.value = "";
+          return;
+        }
+
+        const cardIndex = cards.findIndex(c => c.id === match.id);
+        const imgEl = container.children[cardIndex];
+        imgEl.classList.add("flip-fade");
+
+        localStorage.setItem("card-" + match.id, "true");
+        input.value = "";
+
+        setTimeout(renderCards, 500);
+      } else {
+        input.style.border = "1px solid red";
+        input.value = "";
+        input.placeholder = "Błędny kod";
+      }
+    }
+  });
+
+  setupPanelToggles();
+});
+
+// === Start ===
 fetchCards();
 updateAdminPanel();

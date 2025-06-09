@@ -1,6 +1,7 @@
 // Plik chat.js
+// === 🔧 Inicjalizacja ===
 const chatLog = document.getElementById("chat-log");
-const input = document.getElementById("chat-input");
+const chatInput = document.getElementById("chat-input");
 
 if (!localStorage.getItem("playerId")) {
   const id = "gracz_" + crypto.randomUUID().slice(0, 6);
@@ -14,38 +15,43 @@ let bannedList = {};
 let fullMessageMap = {};
 let allPlayers = [];
 
+
+// === 💬 Obsługa wiadomości ===
 function renderChat(messages) {
   chatLog.innerHTML = "";
   fullMessageMap = messages || {};
 
-  Object.entries(messages || {}).slice(-60).forEach(([id, msg]) => {
+  Object.entries(messages).slice(-60).forEach(([id, msg]) => {
     const name = msg.name;
     const nickname = nicknameMap[name] || name;
     const color = colorMap[name] || "#fff";
     const label = name === "GM"
       ? '<span style="color:red;">GM Wulwryk</span>'
       : `<span style="color:${color};">${nickname}</span>`;
+    const time = new Date(msg.timestamp || Date.now())
+      .toLocaleTimeString("pl-PL", { hour: '2-digit', minute: '2-digit' });
 
-    const date = new Date(msg.timestamp || Date.now());
-    const time = date.toLocaleTimeString("pl-PL", { hour: '2-digit', minute: '2-digit' });
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("chat-msg");
 
-    const div = document.createElement("div");
-    div.innerHTML = `<span style="color:gray;">[${time}]</span> [${label}] ${msg.text}`;
+    const msgSpan = document.createElement("span");
+    msgSpan.innerHTML = `<span style="color:gray;">[${time}]</span> [${label}] ${msg.text}`;
+    wrapper.appendChild(msgSpan);
 
     if (isGamemaster()) {
       const delBtn = document.createElement("button");
       delBtn.textContent = "🗑️";
-      delBtn.style.marginLeft = "10px";
+      delBtn.classList.add("delete-btn");
       delBtn.onclick = () => deleteMessage(id);
-      div.appendChild(delBtn);
+      wrapper.appendChild(delBtn);
     }
 
-    chatLog.appendChild(div);
+    chatLog.appendChild(wrapper);
   });
 }
 
 function sendMessage() {
-  const text = input.value.trim();
+  const text = chatInput.value.trim();
   if (!text) return;
 
   if (bannedList[playerId]) {
@@ -61,17 +67,99 @@ function sendMessage() {
     timestamp: Date.now()
   });
 
-  input.value = "";
+  chatInput.value = "";
+  chatInput.style.height = "auto";
 }
 
+function handleChatInput(e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+
+  chatInput.style.height = "auto";
+  chatInput.style.height = chatInput.scrollHeight + "px";
+}
+
+
+// === 🔄 Subskrypcje Firebase ===
 function subscribeToChat() {
-  db.ref("chat").on("value", (snapshot) => {
-    const data = snapshot.val() || {};
+  db.ref("chat").on("value", snap => {
+    const data = snap.val() || {};
     renderChat(data);
     updatePlayersListFromMessages(data);
   });
 }
 
+function subscribeToNicknames() {
+  db.ref("nicknames").on("value", snap => {
+    nicknameMap = snap.val() || {};
+    renderChat(fullMessageMap);
+    updatePlayersListUI();
+  });
+}
+
+function subscribeToColors() {
+  db.ref("nickColors").on("value", snap => {
+    colorMap = snap.val() || {};
+    renderChat(fullMessageMap);
+    updatePlayersListUI();
+  });
+}
+
+function subscribeToBans() {
+  db.ref("banned").on("value", snap => {
+    bannedList = snap.val() || {};
+    if (bannedList[playerId]) {
+      alert("Zostałeś zbanowany przez Wulwryka 😢");
+      chatInput.disabled = true;
+      chatInput.placeholder = "Zbanowany...";
+    } else {
+      chatInput.disabled = false;
+      chatInput.placeholder = "Napisz coś...";
+    }
+  });
+}
+
+
+// === 👥 Gracze / Nicki / Kolory ===
+function updatePlayersListFromMessages(messages) {
+  const names = new Set();
+  Object.values(messages || {}).forEach(msg => {
+    if (msg.name !== "GM") names.add(msg.name);
+  });
+  allPlayers = [...names];
+  updatePlayersListUI();
+}
+
+function updatePlayersListUI() {
+  const list = document.getElementById("players-list");
+  if (!list || !isGamemaster()) return;
+
+  list.innerHTML = "";
+  allPlayers.forEach(id => {
+    const current = nicknameMap[id] || id;
+    const color = colorMap[id] || "#ffffff";
+
+    const li = document.createElement("li");
+    li.style.marginBottom = "5px";
+
+    li.innerHTML = `
+      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <span>${id} → <strong>${current}</strong></span>
+        <input type="text" placeholder="Nowe imię" id="rename-${id}" style="width:100px;" />
+        <button onclick="renamePlayer('${id}')">Zmień</button>
+        <input type="color" value="${color}" id="color-${id}" onchange="setColor('${id}')" />
+        <button onclick="banPlayer('${id}')">🚫 Ban</button>
+        <button onclick="unbanPlayer('${id}')">✅ Unban</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+
+// === 👑 GM Akcje ===
 function isGamemaster() {
   return localStorage.getItem("isGM") === "true";
 }
@@ -99,73 +187,10 @@ function updateNicknames(newMap) {
   db.ref("nicknames").set(newMap);
 }
 
-function subscribeToNicknames() {
-  db.ref("nicknames").on("value", snap => {
-    nicknameMap = snap.val() || {};
-    renderChat(fullMessageMap);
-    updatePlayersListUI();
-  });
-}
 
-function subscribeToColors() {
-  db.ref("nickColors").on("value", snap => {
-    colorMap = snap.val() || {};
-    renderChat(fullMessageMap);
-    updatePlayersListUI();
-  });
-}
-
-function subscribeToBans() {
-  db.ref("banned").on("value", snap => {
-    bannedList = snap.val() || {};
-    if (bannedList[playerId]) {
-      alert("Zostałeś zbanowany przez Wulwryka 😢");
-      input.disabled = true;
-      input.placeholder = "Zbanowany...";
-    } else {
-      input.disabled = false;
-      input.placeholder = "Napisz coś...";
-    }
-  });
-}
-
-function updatePlayersListFromMessages(messages) {
-  const names = new Set();
-  Object.values(messages || {}).forEach(msg => {
-    if (msg.name !== "GM") names.add(msg.name);
-  });
-  allPlayers = [...names];
-  updatePlayersListUI();
-}
-
-function updatePlayersListUI() {
-  const list = document.getElementById("players-list");
-  if (!list || !isGamemaster()) return;
-
-  list.innerHTML = "";
-  allPlayers.forEach(id => {
-    const current = nicknameMap[id] || id;
-    const color = colorMap[id] || "#ffffff";
-
-    const li = document.createElement("li");
-    li.style.marginBottom = "5px";
-
-    li.innerHTML = `
-      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <span>${id} → <strong>${current}</strong></span>
-        <input type="text" placeholder="Nowe imię" id="rename-${id}" style="width:100px;" />
-		<button onclick="renamePlayer('${id}')">Zmień</button>
-        <input type="color" value="${color}" id="color-${id}" onchange="setColor('${id}')" title="Wybierz kolor"/>
-        <button onclick="banPlayer('${id}')">🚫 Ban</button>
-        <button onclick="unbanPlayer('${id}')">✅ Unban</button>
-      </div>
-    `;
-    list.appendChild(li);
-  });
-}
-
-function deleteMessage(msgId) {
-  db.ref("chat/" + msgId).remove();
+// === 🗑️ Operacje na wiadomościach ===
+function deleteMessage(id) {
+  db.ref("chat/" + id).remove();
 }
 
 function clearChat() {
@@ -177,23 +202,25 @@ function clearChat() {
 function deleteLastN() {
   const n = parseInt(document.getElementById("del-n").value);
   if (!n || n <= 0) return;
-
-  const entries = Object.entries(fullMessageMap);
-  const toDelete = entries.slice(-n);
+  const toDelete = Object.entries(fullMessageMap).slice(-n);
   toDelete.forEach(([id]) => db.ref("chat/" + id).remove());
 }
 
 function deleteFirstN() {
   const n = parseInt(document.getElementById("del-n").value);
   if (!n || n <= 0) return;
-
-  const entries = Object.entries(fullMessageMap);
-  const toDelete = entries.slice(0, n);
+  const toDelete = Object.entries(fullMessageMap).slice(0, n);
   toDelete.forEach(([id]) => db.ref("chat/" + id).remove());
 }
 
 
-// 🔥 INIT
+// === 🚀 Start ===
+chatInput.addEventListener("keydown", handleChatInput);
+chatInput.addEventListener("input", () => {
+  chatInput.style.height = "auto";
+  chatInput.style.height = chatInput.scrollHeight + "px";
+});
+
 subscribeToNicknames();
 subscribeToColors();
 subscribeToBans();

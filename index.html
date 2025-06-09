@@ -8,60 +8,48 @@
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="icon" href="../sg.ico" type="image/webp">
   <script src="js/auth.js"></script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfqHKYj2jAfRWm3bMqtBwfyiOtHGH5fkk",
+      authDomain: "zagadkawulwrykowska.firebaseapp.com",
+      databaseURL: "https://zagadkawulwrykowska-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "zagadkawulwrykowska",
+      storageBucket: "zagadkawulwrykowska.appspot.com",
+      messagingSenderId: "518421177191",
+      appId: "1:518421177191:web:fbd8dcb79c723e9ddf05c2"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
 </head>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCfqHKYj2jAfRWm3bMqtBwfyiOtHGH5fkk",
-    authDomain: "zagadkawulwrykowska.firebaseapp.com",
-    databaseURL: "https://zagadkawulwrykowska-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "zagadkawulwrykowska",
-    storageBucket: "zagadkawulwrykowska.appspot.com",
-    messagingSenderId: "518421177191",
-    appId: "1:518421177191:web:fbd8dcb79c723e9ddf05c2"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
-
 <body>
   <div id="status-bar"></div>
 
-  <h1>Zagadka Wulwryka</h1>
-  <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
-
-  <div id="card-container"></div>
-
-  <div id="code-entry">
-  <p>Wpisz kod aby odblokować kartę:</p>
-  <input type="text" id="code-input" placeholder="Wpisz kod..." />
-  </div>
-
-  <div id="chat">
-    <div id="chat-log"></div>
-    <input id="chat-input" placeholder="Napisz coś..." onkeydown="if (event.key === 'Enter') sendMessage()" />
-  </div>
+  <button id="admin-toggle" style="display: none;">
+    <svg id="admin-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
+      <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+    </svg>
+  </button>
 
   <div id="admin-panel" class="slide-panel" style="display:none;">
-    <h3>Panel Wulwryka 👑</h3>
+    <h3>⚜️ Panel Admina ⚜️</h3>
     <input type="file" id="card-upload"/>
     <input type="text" id="card-code" placeholder="Kod do tej karty"/>
     <button onclick="addCard()">Dodaj kartę</button>
     <pre id="card-json-preview"></pre>
     <button onclick="downloadJSON()">Pobierz cards.json</button>
-	<button onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
+    <button onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
 
-
-    <h4>Gracze aktywni</h4>
+    <h4>👥 Lista Graczy 👥</h4>
     <ul id="players-list"></ul>
 
     <div id="admin-controls">
       <hr/>
-      <p><strong>Zarządzanie czatem</strong></p>
+      <p><strong>📛 Zarządzanie czatem 📛</strong></p>
       <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
       <div class="chat-tools">
         <input type="number" id="del-n" placeholder="X" />
@@ -71,9 +59,28 @@
     </div>
   </div>
 
- 
+  <h1>Zagadka Wulwryka</h1>
+  <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
+
+  <div id="card-container"></div>
+
+  <div id="code-entry">
+    <p>Wpisz kod aby odblokować kartę:</p>
+    <input type="text" id="code-input" placeholder="Wpisz kod..." />
+  </div>
+
+  <button id="chat-toggle">
+    <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
+      <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+    </svg>
+  </button>
+
+  <div id="chat-panel">
+    <div id="chat-log"></div>
+    <textarea id="chat-input" placeholder="Napisz coś..." onkeydown="if (event.key === 'Enter' && !event.shiftKey) { sendMessage(); event.preventDefault(); }"></textarea>
+  </div>
+
   <script src="js/chat.js"></script>
   <script src="js/main.js"></script>
-
 </body>
 </html>
