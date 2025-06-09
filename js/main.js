@@ -1,9 +1,20 @@
-//Plik main.html
 const container = document.getElementById("card-container");
 let cards = [];
 let currentCard = null;
 
-// Domyślnie pokaż 5 zasłoniętych kart
+function getCardsFromStorage() {
+  try {
+    return JSON.parse(localStorage.getItem("cards")) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCardsToStorage(cards) {
+  localStorage.setItem("cards", JSON.stringify(cards));
+}
+
+// Renderuj placeholdery
 function renderPlaceholders() {
   container.innerHTML = "";
   for (let i = 0; i < 5; i++) {
@@ -13,21 +24,25 @@ function renderPlaceholders() {
   }
 }
 
-// Pobieranie kart z JSON-a
+// Pobieranie kart z JSON lub localStorage
 function fetchCards() {
   fetch("data/cards.json?" + Date.now())
     .then(res => res.json())
-    .then(data => {
-      cards = data || [];
+    .then(remoteCards => {
+      const localCards = getCardsFromStorage();
+      cards = [...remoteCards, ...localCards];
       renderCards();
       if (isGamemaster()) updateCardJsonPreview();
     })
     .catch(() => {
-      renderPlaceholders(); // fallback jeśli brak pliku
+      // fallback na same localStorage
+      cards = getCardsFromStorage();
+      if (!cards.length) renderPlaceholders();
+      else renderCards();
     });
 }
 
-// Wyświetlanie kart na stronie
+// Render kart
 function renderCards() {
   container.innerHTML = "";
   cards.forEach(card => {
@@ -41,13 +56,13 @@ function renderCards() {
   });
 }
 
-// Pokazuje popup do odblokowania karty
+// Popup
 function showPopup(card) {
   currentCard = card;
   document.getElementById("unlock-popup").style.display = "block";
 }
 
-// Obsługa odblokowywania
+// Odbokowywanie
 function submitCode() {
   const input = document.getElementById("code-input").value.trim();
   if (input === currentCard.code) {
@@ -60,7 +75,7 @@ function submitCode() {
   document.getElementById("unlock-popup").style.display = "none";
 }
 
-// Panel administratora
+// Panel GM
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
@@ -78,7 +93,7 @@ function updateAdminPanel() {
   updatePlayersList(); // z chat.js
 }
 
-// Dodaje nową kartę i kod
+// Dodanie nowej karty
 function addCard() {
   const fileInput = document.getElementById("card-upload");
   const code = document.getElementById("card-code").value.trim();
@@ -92,23 +107,29 @@ function addCard() {
   const fileName = "card-" + (cards.length + 1) + "." + file.name.split('.').pop();
   const imagePath = "assets/cards/" + fileName;
 
-  cards.push({
+  const newCard = {
     id: "card-" + (cards.length + 1),
     image: imagePath,
     code: code
-  });
+  };
+
+  cards.push(newCard);
+  const newLocalCards = getCardsFromStorage();
+  newLocalCards.push(newCard);
+  saveCardsToStorage(newLocalCards);
 
   updateCardJsonPreview();
+  renderCards();
   alert("Dodano! Prześlij ręcznie plik obrazka do: " + imagePath);
 }
 
-// Podgląd JSON-a w panelu GM-a
+// Podgląd JSON
 function updateCardJsonPreview() {
   const el = document.getElementById("card-json-preview");
   if (el) el.textContent = JSON.stringify(cards, null, 2);
 }
 
-// Pobieranie JSON-a
+// Pobieranie JSON
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(cards, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -118,7 +139,6 @@ function downloadJSON() {
   a.click();
 }
 
-// Inicjalizacja
+// Init
 fetchCards();
-setInterval(fetchCards, 5000);
 updateAdminPanel();
