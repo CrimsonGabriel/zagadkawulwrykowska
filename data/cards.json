@@ -1,27 +1,27 @@
 [
   {
     "id": "card-1",
-    "image": "assets/icons/rewers.webp",
+    "image": "assets/icons/Runa_01.webp",
     "code": "kod123"
   },
   {
     "id": "card-2",
-    "image": "assets/icons/rewers.webp",
+    "image": "assets/icons/Runa_02.webp",
     "code": "kod123"
   },
   {
     "id": "card-3",
-    "image": "assets/icons/rewers.webp",
+    "image": "assets/icons/Runa_03.webp",
     "code": "kod123"
   },
   {
     "id": "card-4",
-    "image": "assets/icons/rewers.webp",
+    "image": "assets/icons/Runa_04.webp",
     "code": "kod123"
   },
   {
     "id": "card-5",
-    "image": "assets/icons/rewers.webp",
+    "image": "assets/icons/Runa_05.webp",
     "code": "kod123"
   }
 ]
