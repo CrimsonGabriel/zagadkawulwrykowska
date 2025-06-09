@@ -89,7 +89,7 @@ img {
   height: 350px;
   transition: transform 0.5s ease, opacity 0.5s ease;
   border-radius: 10px;
-  object-fit: cover;
+  object-fit: contain;
   transform-origin: center;
 }
 
