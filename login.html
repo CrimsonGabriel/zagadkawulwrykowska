@@ -22,14 +22,15 @@
             padding-top: 100px;
           }
         </style>
-      </head><body>
+      </head>
+	  <body class="background">
         <h1 style="color:red; font-size: 36px;">⛔ 403 - Brak dostępu</h1>
         <p style="font-size: 18px;">Musisz najpierw wejść przez stronę główną.</p>
       `);
       throw new Error("403 - Brak dostępu");
     } else {
       document.write(`
-      </head><body>
+      </head><body class="background">
         <div id="login-wrapper">
           <h1>🔐 Logowanie dla GM'a</h1>
           <div id="login-form">
