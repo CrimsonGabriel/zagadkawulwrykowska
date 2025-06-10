@@ -215,6 +215,8 @@ function deleteFirstN() {
 
 
 // === 🚀 Start ===
+chatInput.placeholder = "Napisz coś..."; 
+
 chatInput.addEventListener("keydown", handleChatInput);
 chatInput.addEventListener("input", () => {
   chatInput.style.height = "auto";
@@ -225,3 +227,4 @@ subscribeToNicknames();
 subscribeToColors();
 subscribeToBans();
 subscribeToChat();
+

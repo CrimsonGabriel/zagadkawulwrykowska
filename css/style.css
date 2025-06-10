@@ -201,15 +201,31 @@ img {
   resize: none;
   min-height: 40px;
   line-height: 1.4;
-  overflow: hidden;
-  white-space: pre-wrap;
+  overflow: auto; /* zmienione z hidden */
+  white-space: normal; /* zmienione z pre-wrap */
   word-wrap: break-word;
+}
+
+#chat-input::placeholder {
+  color: #888;
+  opacity: 1;
+  font-style: italic;
 }
 
 
 
 
 /* === Chat Message Layout === */
+#chat-header {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  background-color: #111;
+  border-bottom: 1px solid #333;
+}
+
+
 .chat-msg {
   display: flex;
   justify-content: space-between;
