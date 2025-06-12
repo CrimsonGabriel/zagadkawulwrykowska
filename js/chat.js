@@ -148,10 +148,10 @@ function updatePlayersListUI() {
       <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
         <span>${id} → <strong>${current}</strong></span>
         <input type="text" placeholder="Nowe imię" id="rename-${id}" style="width:100px;" />
-        <button onclick="renamePlayer('${id}')">Zmień</button>
+        <button class="gm-btn-black" onclick="renamePlayer('${id}')">Zmień</button>
         <input type="color" value="${color}" id="color-${id}" onchange="setColor('${id}')" />
-        <button onclick="banPlayer('${id}')">🚫 Ban</button>
-        <button onclick="unbanPlayer('${id}')">✅ Unban</button>
+        <button class="gm-btn-black" onclick="banPlayer('${id}')">🚫 Ban</button>
+        <button class="gm-btn-black" onclick="unbanPlayer('${id}')">✅ Unban</button>
       </div>
     `;
     list.appendChild(li);
@@ -215,7 +215,7 @@ function deleteFirstN() {
 
 
 // === 🚀 Start ===
-chatInput.placeholder = "Napisz coś..."; 
+chatInput.placeholder = "Napisz wiadomość..."; 
 
 chatInput.addEventListener("keydown", handleChatInput);
 chatInput.addEventListener("input", () => {

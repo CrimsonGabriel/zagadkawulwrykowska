@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -28,7 +27,13 @@
 </head>
 <body class="background">
 
-  <div id="status-bar"></div>
+  <div id="status-bar">
+    <span id="status-text"></span>
+    <div id="status-right-buttons">
+      <button class="gm-btn-black" id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
+      <button class="gm-btn-black" id="music-toggle" onclick="toggleMusic()">🔈</button>
+    </div>
+  </div>
 
   <button id="admin-toggle" style="display: none;">
     <svg id="admin-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
@@ -40,10 +45,10 @@
     <h3>⚔️ Panel Admina ⚔️</h3>
     <input type="file" id="card-upload"/>
     <input type="text" id="card-code" placeholder="Kod do tej karty"/>
-    <button onclick="addCard()">Dodaj kartę</button>
+    <button class="gm-btn-black" onclick="addCard()">Dodaj kartę</button>
     <pre id="card-json-preview"></pre>
-    <button onclick="downloadJSON()">Pobierz cards.json</button>
-    <button onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
+    <button class="gm-btn-black" onclick="downloadJSON()">Pobierz cards.json</button>
+    <button class="gm-btn-black" onclick="clearLocalCards()">🗑️ Wyczyść lokalne karty</button>
 
     <h4>👥 Lista Graczy 👥</h4>
     <ul id="players-list"></ul>
@@ -51,38 +56,44 @@
     <div id="admin-controls">
       <hr/>
       <p><strong>💼 Zarządzanie czatem 💼</strong></p>
-      <button onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
+      <button class="gm-btn-black" onclick="clearChat()">🧹 Wyczyść cały czat</button><br><br>
       <div class="chat-tools">
         <input type="number" id="del-n" placeholder="X" />
-        <button onclick="deleteLastN()">Usuń najnowsze</button>
-        <button onclick="deleteFirstN()">Usuń najstarsze</button>
+        <button class="gm-btn-black" onclick="deleteLastN()">Usuń najnowsze</button>
+        <button class="gm-btn-black" onclick="deleteFirstN()">Usuń najstarsze</button>
       </div>
     </div>
   </div>
 
-  <h1>Zagadka Wulwryka</h1>
-  <button id="gm-login" onclick="goToLogin()" style="display:none;">🔐 Logowanie dla GM'a</button>
+  <button id="chat-toggle">
+    <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
+      <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+    </svg>
+  </button>
 
-  <div id="card-container"></div>
-
-  <div id="code-entry">
-    <p>Wpisz kod aby odblokować kartę:</p>
-    <input type="text" id="code-input" placeholder="Wpisz kod..." />
+  <div id="chat-panel">
+    <div id="chat-header">💬 Chat</div>
+    <div id="chat-log"></div>
+    <textarea id="chat-input" placeholder="Napisz coś..."
+      onkeydown="if (event.key === 'Enter' && !event.shiftKey) { sendMessage(); event.preventDefault(); }">
+    </textarea>
   </div>
 
-  <button id="chat-toggle">
-  <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 16 16">
-    <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-  </svg>
-</button>
+  <!-- 🧠 GŁÓWNY WIDOK W ODDZIELNYM BLOKU -->
+  <div id="main-wrapper">
+  <main id="main-content">
+    <h1>Zagadka Wulwryka</h1>
+    <div id="card-container"></div>
+    <div id="code-entry">
+      <input type="text" id="code-input" placeholder="Wpisz kod aby odkryć kartę..." />
+    </div>
+  </main>
+  </div>
 
-<div id="chat-panel">
-  <div id="chat-header">💬 Chat</div>
-  <div id="chat-log"></div>
-  <textarea id="chat-input" placeholder="Napisz coś..."
-    onkeydown="if (event.key === 'Enter' && !event.shiftKey) { sendMessage(); event.preventDefault(); }">
-  </textarea>
-</div>
+  <audio id="bg-music" autoplay loop>
+    <source src="assets/Music.mp3" type="audio/mpeg">
+    Twoja przeglądarka nie wspiera audio. :(
+  </audio>
 
   <script src="js/chat.js"></script>
   <script src="js/main.js"></script>

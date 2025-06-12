@@ -93,20 +93,23 @@ function setupPanelToggles() {
     });
     flipChevron(adminIcon, body.classList.contains("admin-hidden") ? "right" : "left");
   }
+  
 }
 
 function updateAdminPanel() {
   if (!isGamemaster()) return;
 
+  document.body.classList.add("admin-enabled");
   document.getElementById("admin-panel").style.display = "block";
 
   const adminToggle = document.getElementById("admin-toggle");
   if (adminToggle) adminToggle.style.display = "block";
 
-  const statusBar = document.getElementById("status-bar");
-  if (statusBar) {
-    statusBar.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button onclick="logout()">[Wyloguj]</button>`;
-  }
+const statusText = document.getElementById("status-text");
+if (statusText) {
+  statusText.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button class="gm-btn-black"  onclick="logout()">Wyloguj</button>`;
+}
+
 
   const adminControls = document.getElementById("admin-controls");
   if (adminControls) {
@@ -214,6 +217,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupPanelToggles();
 });
+function toggleMusic() {
+  const audio = document.getElementById("bg-music");
+  const btn = document.getElementById("music-toggle");
+  if (audio.paused) {
+    audio.play();
+    btn.textContent = "🔈";
+  } else {
+    audio.pause();
+    btn.textContent = "🔇";
+  }
+}
+
 
 // === Start ===
 fetchCards();
