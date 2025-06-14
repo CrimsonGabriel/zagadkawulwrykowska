@@ -91,6 +91,10 @@ function subscribeToChat() {
   });
 }
 
+function updatePlayersList() {
+  updatePlayersListUI();
+}
+
 function subscribeToNicknames() {
   db.ref("nicknames").on("value", snap => {
     nicknameMap = snap.val() || {};
@@ -215,7 +219,6 @@ function deleteFirstN() {
 
 
 // === 🚀 Start ===
-chatInput.placeholder = "Napisz wiadomość..."; 
 
 chatInput.addEventListener("keydown", handleChatInput);
 chatInput.addEventListener("input", () => {

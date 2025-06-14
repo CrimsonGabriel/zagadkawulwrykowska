@@ -1,6 +1,9 @@
 // Plik main.js
 const container = document.getElementById("card-container");
 let cards = [];
+let cardOwnerMap = {};
+let currentDiscoveredCards = [];
+let cardOwnersMultiMap = {};
 
 function getCardsFromStorage() {
   try {
@@ -23,29 +26,118 @@ function renderPlaceholders() {
   }
 }
 
-function fetchCards() {
-  fetch("data/cards.json?" + Date.now())
-    .then(res => res.json())
-    .then(remoteCards => {
-      const localCards = getCardsFromStorage();
-      cards = [...remoteCards, ...localCards];
-      renderCards();
-      if (isGamemaster()) updateCardJsonPreview();
-    })
-    .catch(() => {
-      cards = getCardsFromStorage();
-      cards.length ? renderCards() : renderPlaceholders();
-    });
+function listenToOwnDiscoveredCards() {
+  firebase.database().ref(`discoveredCards/${playerId}`).on("value", snap => {
+    const data = snap.val() || {};
+    currentDiscoveredCards = Object.entries(data)
+      .filter(([key, val]) => key !== "_nickname" && val === true)
+      .map(([key]) => key);
+    renderCards(currentDiscoveredCards);
+  });
 }
 
-function renderCards() {
+
+function listenToAllDiscoveredCards() {
+  firebase.database().ref("discoveredCards").on("value", snap => {
+    const data = snap.val() || {};
+    const discoveredSet = new Set();
+    cardOwnersMultiMap = {};
+
+    for (const [playerId, entries] of Object.entries(data)) {
+      for (const [cardId, val] of Object.entries(entries)) {
+        if (cardId === "_nickname" || val !== true) continue;
+
+        discoveredSet.add(cardId);
+
+        if (!cardOwnersMultiMap[cardId]) {
+          cardOwnersMultiMap[cardId] = [];
+        }
+        cardOwnersMultiMap[cardId].push(playerId);
+      }
+    }
+
+    currentDiscoveredCards = [...discoveredSet];
+    renderCards(currentDiscoveredCards);
+  });
+}
+
+
+
+function subscribeToNicknames() {
+  firebase.database().ref("nicknames").on("value", snap => {
+    nicknameMap = snap.val() || {};
+    renderCards(currentDiscoveredCards);
+  });
+}
+
+function fetchCards() {
+  return new Promise((resolve) => {
+    fetch("data/cards.json?" + Date.now())
+      .then(res => res.json())
+      .then(remoteCards => {
+        const localCards = getCardsFromStorage();
+        cards = [...remoteCards, ...localCards];
+        if (isGamemaster()) {
+          listenToAllDiscoveredCards();
+          subscribeToNicknames();
+        } else {
+          listenToOwnDiscoveredCards();
+        }
+        resolve();
+      })
+      .catch(() => {
+        cards = getCardsFromStorage();
+        cards.length ? renderCards([]) : renderPlaceholders();
+        resolve();
+      });
+  });
+}
+
+
+function renderCards(discovered = []) {
   container.innerHTML = "";
   cards.forEach(card => {
-    const unlocked = localStorage.getItem("card-" + card.id) === "true";
+    const isDiscovered = discovered.includes(card.id);
     const img = document.createElement("img");
-    img.src = unlocked ? card.image : "assets/icons/rewers.webp";
+    img.src = isDiscovered ? card.image : "assets/icons/rewers.webp";
     img.classList.add("card-img");
-    container.appendChild(img);
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("card-wrapper");
+    wrapper.appendChild(img);
+
+    if (isDiscovered && isGamemaster()) {
+	const owners = cardOwnersMultiMap[card.id] || [];
+	const label = document.createElement("div");
+	label.classList.add("card-nickname");
+
+owners.forEach(pid => {
+  const nick = nicknameMap[pid] || pid;
+  const line = document.createElement("div");
+  line.classList.add("nickname-line");
+
+  const nameSpan = document.createElement("span");
+  nameSpan.textContent = nick;
+  line.appendChild(nameSpan);
+
+  const delBtn = document.createElement("button");
+  delBtn.textContent = "🗑️";
+  delBtn.classList.add("delete-btn");
+  delBtn.title = "Usuń tę kartę graczowi";
+  delBtn.onclick = () => {
+    if (confirm(`Znów zakryć kartę "${card.id}" graczowi ${nick}?`)) {
+      firebase.database().ref(`discoveredCards/${pid}/${card.id}`).remove();
+    }
+  };
+  line.appendChild(delBtn);
+
+  label.appendChild(line);
+});
+
+  wrapper.appendChild(label);
+}
+
+    container.appendChild(wrapper);
   });
 }
 
@@ -93,7 +185,6 @@ function setupPanelToggles() {
     });
     flipChevron(adminIcon, body.classList.contains("admin-hidden") ? "right" : "left");
   }
-  
 }
 
 function updateAdminPanel() {
@@ -102,21 +193,18 @@ function updateAdminPanel() {
   document.body.classList.add("admin-enabled");
   document.getElementById("admin-panel").style.display = "block";
 
+  const statusText = document.getElementById("status-text");
+  if (statusText) {
+    statusText.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button class="gm-btn-black"  onclick="logout()">Wyloguj</button>`;
+  }
+
+  const adminControls = document.getElementById("admin-controls");
+  if (adminControls) adminControls.style.display = "block";
+
   const adminToggle = document.getElementById("admin-toggle");
   if (adminToggle) adminToggle.style.display = "block";
 
-const statusText = document.getElementById("status-text");
-if (statusText) {
-  statusText.innerHTML = `👑 Zalogowano jako <strong>Wulwryczek</strong> <button class="gm-btn-black"  onclick="logout()">Wyloguj</button>`;
-}
-
-
-  const adminControls = document.getElementById("admin-controls");
-  if (adminControls) {
-    adminControls.style.display = "block";
-  }
-
-  updatePlayersList();
+  updatePlayersList?.();
 }
 
 function addCard() {
@@ -177,46 +265,53 @@ function isGamemaster() {
 
 function logout() {
   localStorage.removeItem("isGM");
-  localStorage.removeItem("gm"); // na wszelki wypadek
+  localStorage.removeItem("gm");
   localStorage.removeItem("allowLogin");
   location.reload();
 }
 
 // === DOMContentLoaded Init ===
 document.addEventListener("DOMContentLoaded", () => {
-  const input = document.getElementById("code-input");
+  setupPanelToggles();
+  fetchCards().then(() => {
+    const input = document.getElementById("code-input");
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const code = input.value.trim();
-      const match = cards.find(card => card.code === code);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const code = input.value.trim();
+        const match = cards.find(card => card.code === code);
 
-      if (match) {
-        const alreadyUnlocked = localStorage.getItem("card-" + match.id) === "true";
-        if (alreadyUnlocked) {
-          showTemporaryMessage("🔓 Karta już odblokowana");
+        if (!match) {
+          input.style.border = "1px solid red";
+          input.value = "";
+          input.placeholder = "Błędny kod";
+          return;
+        }
+
+        const isAlreadyDiscovered = currentDiscoveredCards.includes(match.id);
+        if (isAlreadyDiscovered) {
+          showTemporaryMessage("🔒 Ta karta została już przez Ciebie odkryta.");
           input.value = "";
           return;
         }
 
-        const cardIndex = cards.findIndex(c => c.id === match.id);
-        const imgEl = container.children[cardIndex];
-        imgEl.classList.add("flip-fade");
+        firebase.database().ref(`discoveredCards/${playerId}/${match.id}`).set(true);
 
-        localStorage.setItem("card-" + match.id, "true");
         input.value = "";
-
-        setTimeout(renderCards, 500);
-      } else {
-        input.style.border = "1px solid red";
-        input.value = "";
-        input.placeholder = "Błędny kod";
       }
-    }
-  });
+    });
 
-  setupPanelToggles();
+    if (!isGamemaster()) {
+      listenToOwnDiscoveredCards(); // ⬅️ Dodane tutaj
+    }
+
+    updateAdminPanel();
+	updateCardJsonPreview();
+  });
 });
+
+
+
 function toggleMusic() {
   const audio = document.getElementById("bg-music");
   const btn = document.getElementById("music-toggle");
@@ -228,8 +323,3 @@ function toggleMusic() {
     btn.textContent = "🔇";
   }
 }
-
-
-// === Start ===
-fetchCards();
-updateAdminPanel();

@@ -7,7 +7,7 @@ body {
   text-align: center;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
   height: 100vh;
 }
 
@@ -82,11 +82,9 @@ h1 {
 
 /* === Card Container === */
 #card-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 1vw;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.2vw;
   padding: 20px;
   overflow: hidden;
   max-width: 100%;
@@ -274,7 +272,10 @@ h1 {
   font-size: 13px;
   white-space: pre-wrap;
   overflow-x: auto;
+  overflow-y: auto;          
+  max-height: 250px;        
   margin: 10px 0;
+  border-radius: 4px;
 }
 
 /* === Chat Panel === */
@@ -395,7 +396,17 @@ body.admin-hidden #admin-toggle {
   padding-bottom: 20px;
   box-sizing: border-box;
   transition: margin 0.3s ease, width 0.3s ease;
+  
+ 
+  overflow-y: auto;
+  height: 100vh;
+  scrollbar-width: none;       
+  -ms-overflow-style: none;   
 }
+#main-content::-webkit-scrollbar {
+  display: none;
+}
+
 
 body.admin-enabled:not(.admin-hidden):not(.chat-hidden) #main-wrapper {
   margin-left: 400px;
@@ -444,4 +455,53 @@ body.admin-visible #main-wrapper {
 
 body.chat-visible #main-wrapper {
   margin-right: 320px;
+}
+
+.card-owner {
+  font-size: 13px;
+  color: #ffd700;
+  margin-top: 6px;
+  text-shadow: 1px 1px 2px black;
+}
+
+.card-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0.5em;
+}
+
+.card-nickname {
+  text-align: center;
+  font-size: 0.8em;
+  color: gold;
+  margin-top: 0.3em;
+}
+
+#card-container > .card-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.card-wrapper img.card-img {
+  width: 100%;
+  height: auto;
+}
+
+.nickname-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.nickname-line button.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: red;
+  font-size: 14px;
+  padding: 0;
 }
